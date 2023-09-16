@@ -17,6 +17,76 @@ document.addEventListener('DOMContentLoaded', function () {
     //cargar productos de localStorage
     mostrarProducto();
 
+    
+
+    // Obtener referencia al elemento select
+    var metodoPagoSelect = document.getElementById("metodo");
+
+    // Obtener una lista de elementos con la clase deseada
+    var elementosOcultarMostrar = document.querySelectorAll(".esCredito");
+    
+
+    // Obtener referencias a los elementos HTML
+    var precioProductoInput = document.getElementById("precioProducto");
+    var interesMensualInput = document.getElementById("interesMensual");
+    var mesesPlazoInput = document.getElementById("mesesPlazo");
+    var primaInput = document.getElementById("prima");
+    var cuotaMensualInput = document.getElementById("cuotaMensual");
+
+    // Agregar un evento de cambio a los campos relevantes
+    precioProductoInput.addEventListener("input", calcularCuotaMensual);
+    interesMensualInput.addEventListener("input", calcularCuotaMensual);
+    mesesPlazoInput.addEventListener("input", calcularCuotaMensual);
+    primaInput.addEventListener("input", calcularCuotaMensual);
+
+    // Función para calcular la cuota mensual
+    function calcularCuotaMensual() {
+        let precioProducto = parseFloat(precioProductoInput.value);
+        let interesMensual = parseFloat(interesMensualInput.value) / 100; // Convertir a decimal
+        let mesesPlazo = parseFloat(mesesPlazoInput.value);
+        let prima = parseFloat(primaInput.value);
+
+        // Calcular el monto del préstamo (precio del producto - prima)
+        let montoPrestamo = precioProducto - prima;
+
+        // Calcular la cuota mensual
+        if (!isNaN(precioProducto) && !isNaN(interesMensual) && !isNaN(mesesPlazo) && !isNaN(prima)) {
+            let tasaInteresMensual = Math.pow(1 + interesMensual, mesesPlazo);
+            let cuotaMensual = (montoPrestamo * interesMensual * tasaInteresMensual) / (tasaInteresMensual - 1);
+            cuotaMensualInput.value = cuotaMensual.toFixed(2); // Mostrar dos decimales
+        } else {
+            cuotaMensualInput.value = ""; // Limpiar el campo si falta algún valor
+        }
+    }
+
+    
+    // Función para ocultar los elementos
+    function ocultarElementos() {
+        elementosOcultarMostrar.forEach(function (elemento) {
+            elemento.style.display = "none";
+        });
+    }
+
+    // Ocultar los elementos al cargar la página (por defecto)
+    ocultarElementos();
+
+    // Agregar un evento de cambio al select
+    metodoPagoSelect.addEventListener("change", function () {
+        var selectedValue = metodoPagoSelect.value;
+
+        // Obtener una lista de elementos con la clase deseada
+        var elementosOcultarMostrar = document.querySelectorAll(".esCredito");
+
+        // Ocultar o mostrar los elementos según el método de pago seleccionado
+        elementosOcultarMostrar.forEach(function (elemento) {
+            if (selectedValue === "CONTADO") {
+                elemento.style.display = "none";
+            } else if (selectedValue === "CREDITO") {
+                elemento.style.display = "block";
+            }
+        });
+    });
+
     //autocomplete clientes
     $("#buscarCliente").autocomplete({
         source: function (request, response) {

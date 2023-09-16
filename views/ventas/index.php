@@ -84,16 +84,25 @@
                         </div>
 
                         <label>Dirección</label>
-                        <ul class="list-group">
-                            <li class="list-group-item" id="direccionCliente"><i class="fas fa-home"></i></li>
-                        </ul>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text"><i class="fas fa-home"></i></span>
+                            <input class="form-control" type="text" id="direccionCliente" placeholder="Dirección">
+                        </div>
+
+                        <div class="esCredito">
+                            <label>Interes Mensual</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                <input class="form-control" type="text" id="interesMensual" placeholder="0.00">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="col-md-4">
-                        <label>Pagar con</label>
+                        <label> precioProducto </label>
                         <div class="input-group mb-2">
                             <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                            <input class="form-control" type="text" id="pagar_con" placeholder="0.00">
+                            <input class="form-control" type="text" id="precioProducto" placeholder="0.00">
                         </div>
                         <label>Cambio</label>
                         <div class="input-group mb-2">
@@ -104,6 +113,13 @@
                         <div class="input-group mb-2">
                             <span class="input-group-text"><i class="fas fa-user"></i></span>
                             <input class="form-control" type="text" value="<?php echo $_SESSION['nombre_usuario']; ?>" placeholder="Vendedor" disabled>
+                        </div>
+                        <div class="esCredito">
+                            <label>Prima</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                <input class="form-control" type="text" id="prima" placeholder="0.00">
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-4">                       
@@ -126,6 +142,21 @@
                                 <option value="CONTADO">CONTADO</option>
                                 <option value="CREDITO">CREDITO</option>
                             </select>
+                        </div>
+
+                    <div class="esCredito">
+                        <label>Meses plazo</label>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                            <input class="form-control" type="number" id="mesesPlazo" placeholder="0.00">
+                        </div>
+
+                        <label>Cuota mensual</label>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                            <input class="form-control" type="text" id="cuotaMensual" placeholder="Cuota mensual" disabled>
+                            <input class="form-control" type="hidden" id="cuotaMensualHidden" >
+                        </div>
                         </div>
 
                         <div class="d-grid">
