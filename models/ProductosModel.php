@@ -15,11 +15,10 @@ class ProductosModel extends Query{
         return $this->selectAll($sql);
     }
 
-    public function registrar($codigo, $nombre, $precio_compra, $precio_venta,
-    $id_categoria, $foto)
+    public function registrar($codigo, $producto, $marca, $modelo, $ganancia, $descripcion, $id_categoria, $foto)
     {
-        $sql = "INSERT INTO productos (codigo, descripcion, precio_compra, precio_venta, id_categoria, foto) VALUES (?,?,?,?,?,?)";
-        $array = array($codigo, $nombre, $precio_compra, $precio_venta,
+        $sql = "INSERT INTO productos (codigo, producto, marca, modelo, ganancia, descripcion, id_categoria, foto) VALUES (?,?,?,?,?,?,?,?)";
+        $array = array($codigo, $producto, $marca, $modelo, $ganancia, $descripcion,
         $id_categoria, $foto);
         return $this->insertar($sql, $array);
     }
@@ -47,11 +46,10 @@ class ProductosModel extends Query{
         return $this->select($sql);
     }
 
-    public function actualizar($codigo, $nombre, $precio_compra, $precio_venta,
-    $id_categoria, $foto, $id)
+    public function actualizar($codigo, $producto, $marca, $modelo, $ganancia, $descripcion,$id_categoria, $foto, $id)
     {
-        $sql = "UPDATE productos SET codigo=?, descripcion=?, precio_compra=?, precio_venta=?, id_categoria=?, foto=? WHERE id=?";
-        $array = array($codigo, $nombre, $precio_compra, $precio_venta,
+        $sql = "UPDATE productos SET codigo=?, producto=?, marca=?, modelo=?, ganancia=?,descripcion=?, id_categoria=?, foto=? WHERE id=?";
+        $array = array($codigo, $producto, $marca, $modelo, $ganancia, $descripcion,
         $id_categoria, $foto, $id);
         return $this->save($sql, $array);
     }

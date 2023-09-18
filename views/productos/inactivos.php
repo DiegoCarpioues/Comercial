@@ -8,14 +8,15 @@
             <table class="table table-bordered table-striped table-hover nowrap" id="tblProductos" style="width: 100%;">
                 <thead>
                     <tr>
-                        <th>Codigo</th>
-                        <th>Descripcion</th>
-                        <th>P. Compra</th>
-                        <th>P. Venta</th>
-                        <th>Stock</th>
-                        <th>Categoria</th>
-                        <th>Foto</th>
-                        <th></th>
+                      <th>Codigo</th>
+                      <th>Producto</th>
+                      <th>Marca</th>
+                      <th>Modelo</th>
+                      <th>Ganancia</th>
+                      <th>Categoria</th>
+                      <th>Descripción</th>
+                      <th>Foto</th>
+                      <th></th>
                     </tr>
                 </thead>
 

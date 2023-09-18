@@ -7,7 +7,7 @@ const primerTab = new bootstrap.Tab(primerTabEl)
 function insertarRegistros(url, idFormulario, tbl, idButton, accion) {
     //crear formData
     const data = new FormData(idFormulario);
-    //hacer una instancia del objeto XMLHttpRequest 
+    //hacer una instancia del objeto XMLHttpRequest
     const http = new XMLHttpRequest();
     //Abrir una Conexion - POST - GET
     http.open('POST', url, true);
@@ -16,6 +16,7 @@ function insertarRegistros(url, idFormulario, tbl, idButton, accion) {
     //verificar estados
     http.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
+            console.log("Hello: "+this.responseText);
             const res = JSON.parse(this.responseText);
             Swal.fire({
                 toast: true,
@@ -52,7 +53,7 @@ function eliminarRegistros(url, tbl) {
         confirmButtonText: 'Si, Eliminar!'
     }).then((result) => {
         if (result.isConfirmed) {
-            //hacer una instancia del objeto XMLHttpRequest 
+            //hacer una instancia del objeto XMLHttpRequest
             const http = new XMLHttpRequest();
             //Abrir una Conexion - POST - GET
             http.open('GET', url, true);
@@ -89,7 +90,7 @@ function restaurarRegistros(url, tbl) {
         confirmButtonText: 'Si, Restaurar!'
     }).then((result) => {
         if (result.isConfirmed) {
-            //hacer una instancia del objeto XMLHttpRequest 
+            //hacer una instancia del objeto XMLHttpRequest
             const http = new XMLHttpRequest();
             //Abrir una Conexion - POST - GET
             http.open('GET', url, true);

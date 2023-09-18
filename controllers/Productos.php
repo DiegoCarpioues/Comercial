@@ -45,12 +45,14 @@ class Productos extends Controller
     }
     public function registrar()
     {
-        if (isset($_POST['codigo']) && isset($_POST['nombre'])) {
+        if (isset($_POST['codigo']) && isset($_POST['producto'])) {
             $id = strClean($_POST['id']);
             $codigo = strClean($_POST['codigo']);
-            $nombre = strClean($_POST['nombre']);
-            $precio_compra = strClean($_POST['precio_compra']);
-            $precio_venta = strClean($_POST['precio_venta']);
+            $producto = strClean($_POST['producto']);
+            $marca = strClean($_POST['marca']);
+            $modelo = strClean($_POST['modelo']);
+            $ganancia = strClean($_POST['ganancia']);
+            $descripcion = strClean($_POST['descripcion']);
             $id_categoria = strClean($_POST['id_categoria']);
             $fotoActual = strClean($_POST['foto_actual']);
             $foto = $_FILES['foto'];
@@ -66,12 +68,14 @@ class Productos extends Controller
             }
             if (empty($codigo)) {
                 $res = array('msg' => 'EL CODIGO ES REQUERIDO', 'type' => 'warning');
-            } else if (empty($nombre)) {
-                $res = array('msg' => 'EL NOMBRE ES REQUERIDO', 'type' => 'warning');
-            } else if (empty($precio_compra)) {
-                $res = array('msg' => 'EL PRECIO COMPRA ES REQUERIDO', 'type' => 'warning');
-            } else if (empty($precio_venta)) {
-                $res = array('msg' => 'EL PRECIO VENTA ES REQUERIDO', 'type' => 'warning');
+            } else if (empty($producto)) {
+                $res = array('msg' => 'EL PRODCUTO ES REQUERIDO', 'type' => 'warning');
+            } else if (empty($marca)) {
+                $res = array('msg' => 'LA MARCA ES REQUERIDA', 'type' => 'warning');
+            } else  if (empty($ganancia)){
+                $res = array('msg' => 'LA GANANCIA ES REQUERIDA', 'type' => 'warning');
+            }else if (empty($modelo)) {
+                $res = array('msg' => 'EL MODELO ES REQUERIDO', 'type' => 'warning');
             } else if (empty($id_categoria)) {
                 $res = array('msg' => 'LA CATEGORIA ES REQUERIDO', 'type' => 'warning');
             } else {
@@ -80,9 +84,11 @@ class Productos extends Controller
                     if (empty($verificar)) {
                         $data = $this->model->registrar(
                             $codigo,
-                            $nombre,
-                            $precio_compra,
-                            $precio_venta,
+                            $producto,
+                            $marca,
+                            $modelo,
+                            $ganancia,
+                            $descripcion,
                             $id_categoria,
                             $destino
                         );
@@ -105,9 +111,11 @@ class Productos extends Controller
                         $imgTemp = ($temp['foto'] != null) ? $temp['foto'] : 'default.png';
                         $data = $this->model->actualizar(
                             $codigo,
-                            $nombre,
-                            $precio_compra,
-                            $precio_venta,
+                            $producto,
+                            $marca,
+                            $modelo,
+                            $ganancia,
+                            $descripcion,
                             $id_categoria,
                             $destino,
                             $id
