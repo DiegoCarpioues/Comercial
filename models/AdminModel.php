@@ -23,7 +23,7 @@ class AdminModel extends Query{
         SUM(IF(MONTH(fecha) = 9, total, 0)) AS sep,
         SUM(IF(MONTH(fecha) = 10, total, 0)) AS oct,
         SUM(IF(MONTH(fecha) = 11, total, 0)) AS nov,
-        SUM(IF(MONTH(fecha) = 12, total, 0)) AS dic 
+        SUM(IF(MONTH(fecha) = 12, total, 0)) AS dic
         FROM $table WHERE fecha BETWEEN '$desde' AND '$hasta' AND id_usuario = $id_usuario";
         return $this->select($sql);
     }
@@ -59,7 +59,7 @@ class AdminModel extends Query{
         SUM(IF(MONTH(fecha) = 9, monto, 0)) AS sep,
         SUM(IF(MONTH(fecha) = 10, monto, 0)) AS oct,
         SUM(IF(MONTH(fecha) = 11, monto, 0)) AS nov,
-        SUM(IF(MONTH(fecha) = 12, monto, 0)) AS dic 
+        SUM(IF(MONTH(fecha) = 12, monto, 0)) AS dic
         FROM gastos WHERE fecha BETWEEN '$desde' AND '$hasta' AND id_usuario = $id_usuario";
         return $this->select($sql);
     }

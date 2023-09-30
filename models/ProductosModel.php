@@ -15,11 +15,10 @@ class ProductosModel extends Query{
         return $this->selectAll($sql);
     }
 
-    public function registrar($codigo, $nombre, $precio_compra, $precio_venta,
-    $id_categoria, $foto)
+    public function registrar($codigo, $producto, $marca, $modelo, $ganancia, $descripcion, $id_categoria, $foto)
     {
-        $sql = "INSERT INTO productos (codigo, descripcion, precio_compra, precio_venta, id_categoria, foto) VALUES (?,?,?,?,?,?)";
-        $array = array($codigo, $nombre, $precio_compra, $precio_venta,
+        $sql = "INSERT INTO productos (codigo, producto, marca, modelo, ganancia, descripcion, id_categoria, foto) VALUES (?,?,?,?,?,?,?,?)";
+        $array = array($codigo, $producto, $marca, $modelo, $ganancia, $descripcion,
         $id_categoria, $foto);
         return $this->insertar($sql, $array);
     }
@@ -47,24 +46,23 @@ class ProductosModel extends Query{
         return $this->select($sql);
     }
 
-    public function actualizar($codigo, $nombre, $precio_compra, $precio_venta,
-    $id_categoria, $foto, $id)
+    public function actualizar($codigo, $producto, $marca, $modelo, $ganancia, $descripcion,$id_categoria, $foto, $id)
     {
-        $sql = "UPDATE productos SET codigo=?, descripcion=?, precio_compra=?, precio_venta=?, id_categoria=?, foto=? WHERE id=?";
-        $array = array($codigo, $nombre, $precio_compra, $precio_venta,
+        $sql = "UPDATE productos SET codigo=?, producto=?, marca=?, modelo=?, ganancia=?,descripcion=?, id_categoria=?, foto=? WHERE id=?";
+        $array = array($codigo, $producto, $marca, $modelo, $ganancia, $descripcion,
         $id_categoria, $foto, $id);
         return $this->save($sql, $array);
     }
 
     public function buscarPorCodigo($valor)
     {
-        $sql = "SELECT id, descripcion, cantidad, precio_compra, precio_venta FROM productos WHERE codigo = '$valor' AND estado = 1";
-        return $this->select($sql);
+        $sql = "SELECT * FROM productos WHERE codigo LIKE '%".$valor."%' AND estado = 1 LIMIT 10";
+        return $this->selectAll($sql);
     }
 
     public function buscarPorNombre($valor)
     {
-        $sql = "SELECT id, descripcion, cantidad, precio_compra, precio_venta FROM productos WHERE descripcion LIKE '%".$valor."%' AND estado = 1 LIMIT 10";
+        $sql = "SELECT * FROM productos WHERE producto LIKE '%".$valor."%' AND estado = 1 LIMIT 10";
         return $this->selectAll($sql);
     }
 

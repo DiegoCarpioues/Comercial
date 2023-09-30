@@ -1,3 +1,4 @@
+
 const tblNuevaCompra = document.querySelector('#tblNuevaCompra tbody');
 const serie = document.querySelector('#serie');
 //provedores
@@ -7,6 +8,29 @@ const idProveedor = document.querySelector('#idProveedor');
 const errorProveedor = document.querySelector('#errorProveedor');
 
 document.addEventListener('DOMContentLoaded', function () {
+ $('#tblHistorial').DataTable({
+      ajax: {
+          url: base_url + 'compras/listar',
+          dataSrc: ''
+      },
+      columns: [
+          { data: 'fecha' },
+          { data: 'producto' },
+          { data: 'cantidad' },
+          { data: 'precio' },
+          { data: 'subtotal' },
+          { data: 'proveedor' },
+          { data: 'serie' },
+          { data: 'acciones' },
+      ],
+      language: {
+          url: base_url + 'assets/js/espanol.json'
+      },
+      dom,
+      buttons,
+      responsive: true,
+      order: [[0, 'desc']],
+  });
     //autocomplete proveedores
     $("#buscarProveedor").autocomplete({
         source: function (request, response) {
@@ -35,6 +59,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+
+
     //cargar datos
     mostrarProducto();
 
@@ -53,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         } else {
             const url = base_url + 'compras/registrarCompra';
-            //hacer una instancia del objeto XMLHttpRequest 
+            //hacer una instancia del objeto XMLHttpRequest
             const http = new XMLHttpRequest();
             //Abrir una Conexion - POST - GET
             http.open('POST', url, true);
@@ -100,27 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     //mostrar historial
     //cargar datos con el plugin datatables
-    tblHistorial = $('#tblHistorial').DataTable({
-        ajax: {
-            url: base_url + 'compras/listar',
-            dataSrc: ''
-        },
-        columns: [
-            { data: 'fecha' },
-            //{ data: 'hora' },
-            { data: 'total' },
-            { data: 'nombre' },
-            { data: 'serie' },
-            { data: 'acciones' },
-        ],
-        language: {
-            url: base_url + 'assets/js/espanol.json'
-        },
-        dom,
-        buttons,
-        responsive: true,
-        order: [[0, 'desc']],
-    });
+
 
 })
 
@@ -128,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function mostrarProducto() {
     if (localStorage.getItem(nombreKey) != null) {
         const url = base_url + 'productos/mostrarDatos';
-        //hacer una instancia del objeto XMLHttpRequest 
+        //hacer una instancia del objeto XMLHttpRequest
         const http = new XMLHttpRequest();
         //Abrir una Conexion - POST - GET
         http.open('POST', url, true);
@@ -182,38 +188,6 @@ function verReporte(idCompra) {
         } else if (result.isDenied) {
             const ruta = base_url + 'compras/reporte/factura/' + idCompra;
             window.open(ruta, '_blank');
-        }
-    })
-}
-
-function anularCompra(idCompra) {
-    Swal.fire({
-        title: 'Esta seguro de anular la compra?',
-        text: "El stock de los productos cambiarán!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Si, Anular!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const url = base_url + 'compras/anular/' + idCompra;
-            //hacer una instancia del objeto XMLHttpRequest 
-            const http = new XMLHttpRequest();
-            //Abrir una Conexion - POST - GET
-            http.open('GET', url, true);
-            //Enviar Datos
-            http.send();
-            //verificar estados
-            http.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    const res = JSON.parse(this.responseText);
-                    alertaPersonalizada(res.type, res.msg);
-                    if (res.type == 'success') {
-                        tblHistorial.ajax.reload();
-                    }
-                }
-            }
         }
     })
 }

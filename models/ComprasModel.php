@@ -34,7 +34,7 @@ class ComprasModel extends Query{
 
     public function getCompras()
     {
-        $sql = "SELECT c.id,c.productos,c.total,DATE_FORMAT(c.fecha,'%d-%m-%Y') AS fecha,c.serie,c.estado,c.apertura, p.nombre FROM compras c INNER JOIN proveedor p ON c.id_proveedor = p.id";
+        $sql = "SELECT c.id, DATE_FORMAT(c.fecha,'%d-%m-%Y') as fecha, pro.producto, c.cantidad, c.precio, (c.cantidad *c.precio) as subtotal, p.nombre as proveedor, c.serie, c.estado FROM proveedor as p INNER JOIN compras as c ON p.id = c.id_proveedor INNER JOIN productos as pro ON c.id_productos = pro.id";
         return $this->selectAll($sql);
     }
 

@@ -1,4 +1,4 @@
-let tblProductos;
+
 const formulario = document.querySelector('#formulario');
 const btnAccion = document.querySelector('#btnAccion');
 const btnNuevo = document.querySelector('#btnNuevo');
@@ -21,18 +21,19 @@ const errorCategoria = document.querySelector('#errorCategoria');
 
 document.addEventListener('DOMContentLoaded', function () {
     //cargar datos con el plugin datatables
-    tblProductos = $('#tblProductos').DataTable({
+     $('#tblProductos').DataTable({
         ajax: {
             url: base_url + 'productos/listar',
             dataSrc: ''
         },
         columns: [
             { data: 'codigo' },
-            { data: 'descripcion' },
-            { data: 'precio_compra' },
-            { data: 'precio_venta' },
-            { data: 'cantidad' },
+            { data: 'producto' },
+            { data: 'marca' },
+            { data: 'modelo' },
+            { data: 'ganancia' },
             { data: 'categoria' },
+            { data: 'descripcion' },
             { data: 'imagen' },
             { data: 'acciones' }
         ],
@@ -71,17 +72,21 @@ document.addEventListener('DOMContentLoaded', function () {
     formulario.addEventListener('submit', function (e) {
         e.preventDefault();
         limpiarCampos();
+
         if (codigo.value == '') {
             errorCodigo.textContent = 'EL CODIGO ES REQUERIDO';
-        } else if (nombre.value == '') {
-            errorNombre.textContent = 'EL NOMBRE ES REQUERIDO';
-        } else if (precio_compra.value == '') {
-            errorCompra.textContent = 'EL PRECIO COMPRA ES REQUERIDO';
-        } else if (precio_venta.value == '') {
-            errorVenta.textContent = 'EL PRECIO VENTA ES REQUERIDO';
+
+        } else if (producto.value == '') {
+            errorPrucducto.textContent = 'EL NOMBRE DE PRODCUCTO ES REQUERIDO';
+        } else if (marca.value == '') {
+            errorMarca.textContent = 'LA MARCA ES REQUERIDA';
+        } else if (modelo.value == '') {
+            errorModelo.textContent = 'EL MODELO ES REQUERIDO';
         } else if (id_categoria.value == '') {
             errorCategoria.textContent = 'SELECCIONA LA CATEGORIA';
-        } else {
+        } else if(ganancia.value == ''){
+            errorGanancia.textContent = 'LA GANANCIA ES REQUERIDA';
+        }else {
             const url = base_url + 'productos/registrar';
             insertarRegistros(url, this, tblProductos, btnAccion, false);
             limpiarCampos()
@@ -103,7 +108,7 @@ function eliminarProducto(idProducto) {
 function editarProducto(idProducto) {
     limpiarCampos();
     const url = base_url + 'productos/editar/' + idProducto;
-    //hacer una instancia del objeto XMLHttpRequest 
+    //hacer una instancia del objeto XMLHttpRequest
     const http = new XMLHttpRequest();
     //Abrir una Conexion - POST - GET
     http.open('GET', url, true);
@@ -115,11 +120,13 @@ function editarProducto(idProducto) {
             const res = JSON.parse(this.responseText);
             id.value = res.id;
             codigo.value = res.codigo;
-            nombre.value = res.descripcion;
-            precio_compra.value = res.precio_compra;
-            precio_venta.value = res.precio_venta;
+            producto.value = res.producto;
+            marca.value = res.marca;
+            modelo.value = res.modelo;
+            ganancia.value = res.ganancia;
             id_categoria.value = res.id_categoria;
             foto_actual.value = res.foto;
+            descripcion.value = res.descripcion;
             containerPreview.innerHTML = `<img class="img-thumbnail" src="${base_url + res.foto}" width="200">
             <button class="btn btn-danger" type="button" onclick="deleteImg()"><i class="fas fa-trash"></i></button>`;
             btnAccion.textContent = 'Actualizar';
@@ -130,9 +137,11 @@ function editarProducto(idProducto) {
 
 function limpiarCampos() {
     errorCodigo.textContent = '';
-    errorNombre.textContent = '';
-    errorCompra.textContent = '';
-    errorVenta.textContent = '';
+    errorProducto.textContent = '';
+    errorMarca.textContent = '';
+    errorModelo.textContent = '';
+    errorGanancia.textContent = '';
     errorCategoria.textContent = '';
     containerPreview.innerHTML = '';
+    errorDescripcion.textContent = '';
 }

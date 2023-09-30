@@ -34,11 +34,12 @@
                         <thead>
                             <tr>
                                 <th>Codigo</th>
-                                <th>Descripcion</th>
-                                <th>P. Compra</th>
-                                <th>P. Venta</th>
-                                <th>Stock</th>
-                                <th>Categoria</th>
+                                <th>Producto</th>
+                                <th>Marca</th>
+                                <th>Modelo</th>
+                                <th>Ganancia %</th>
+                                <th>Categoría</th>
+                                <th>Descripción</th>
                                 <th>Foto</th>
                                 <th></th>
                             </tr>
@@ -62,33 +63,42 @@
                             </div>
                             <span id="errorCodigo" class="text-danger"></span>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="nombre">Nombre <span class="text-danger">*</span></label>
+                        <div class="col-md-5 mb-3">
+                            <label for="nombre">Producto <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-list"></i></span>
-                                <input class="form-control" type="text" name="nombre" id="nombre" placeholder="Nombre">
+                                <input class="form-control" type="text" name="producto" id="producto" placeholder="Producto">
                             </div>
-                            <span id="errorNombre" class="text-danger"></span>
+                            <span id="errorProducto" class="text-danger"></span>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <label for="precio_compra">Precio Compra <span class="text-danger">*</span></label>
+                            <label for="precio_compra">Marca <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                                <input class="form-control" type="number" step="0.01" min="0.01" name="precio_compra" id="precio_compra" placeholder="Nombre">
+                                <input class="form-control" type="text" name="marca" id="marca" placeholder="Marca">
                             </div>
-                            <span id="errorCompra" class="text-danger"></span>
+                            <span id="errorMarca" class="text-danger"></span>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <label for="precio_venta">Precio Venta <span class="text-danger">*</span></label>
+                            <label for="precio_venta">Modelo <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                                <input class="form-control" type="number" step="0.01" min="0.01" name="precio_venta" id="precio_venta" placeholder="Nombre">
+                                <input class="form-control" type="text" name="modelo" id="modelo" placeholder="Modelo">
                             </div>
-                            <span id="errorVenta" class="text-danger"></span>
+                            <span id="errorModelo" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <label for="precio_venta">Ganancia <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                <input class="form-control" type="number" step="0.01" min="0.01" name="ganancia" id="ganancia" placeholder="Ganancia">
+                            </div>
+                            <span id="errorGanancia" class="text-danger"></span>
                         </div>
                         <div class="col-md-5 mb-3">
                             <div class="form-group">
-                                <label for="id_categoria">Categoria <span class="text-danger">*</span></label>
+                                <label for="id_categoria">Categoría <span class="text-danger">*</span></label>
                                 <select id="id_categoria" class="form-control" name="id_categoria">
                                     <option value="">Seleccionar</option>
                                     <?php foreach ($data['categorias'] as $categoria) { ?>
@@ -105,6 +115,13 @@
                             </div>
                             <div id="containerPreview">
                             </div>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <div class="form-group">
+                                <label for="direccion">Descripción </label>
+                                <textarea id="descripcion" class="form-control" name="descripcion" rows="3" placeholder="Descripción"></textarea>
+                            </div>
+                            <span id="errorDescripcion" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="text-end">
