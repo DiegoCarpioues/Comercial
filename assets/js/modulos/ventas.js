@@ -9,13 +9,84 @@ const descuento = document.querySelector('#descuento');
 const metodo = document.querySelector('#metodo');
 const impresion_directa = document.querySelector('#impresion_directa');
 
-const pagar_con = document.querySelector('#pagar_con');
+const precioProducto = document.querySelector('#precioProducto');
 const totalPagarHidden = document.querySelector('#totalPagarHidden');
 const cambio = document.querySelector('#cambio');
+
+//const btnAccion = document.querySelector('#btnAccion');
 
 document.addEventListener('DOMContentLoaded', function () {
     //cargar productos de localStorage
     mostrarProducto();
+    
+
+
+    // Obtener referencia al elemento select
+    var metodoPagoSelect = document.getElementById("metodo");
+
+    // Obtener una lista de elementos con la clase deseada
+    var elementosOcultarMostrar = document.querySelectorAll(".esCredito");
+
+    // Ocultar los elementos al cargar la página (por defecto)
+    ocultarElementos();
+
+    // Función para ocultar los elementos
+    function ocultarElementos() {
+        elementosOcultarMostrar.forEach(function (elemento) {
+            elemento.style.display = "none";
+        });
+    }
+
+    // Agregar un evento de cambio al select
+    metodoPagoSelect.addEventListener("change", function () {
+        var selectedValue = metodoPagoSelect.value;
+
+        // Obtener una lista de elementos con la clase deseada
+        var elementosOcultarMostrar = document.querySelectorAll(".esCredito");
+
+        // Ocultar o mostrar los elementos según el método de pago seleccionado
+        elementosOcultarMostrar.forEach(function (elemento) {
+            if (selectedValue === "CONTADO") {
+                elemento.style.display = "none";
+            } else if (selectedValue === "CREDITO") {
+                elemento.style.display = "block";
+            }
+        });
+    });
+
+        // Obtener referencias a los elementos HTML
+        var precioProductoInput = document.getElementById("precioProducto");
+        var interesMensualInput = document.getElementById("interesMensual");
+        var mesesPlazoInput = document.getElementById("mesesPlazo");
+        var primaInput = document.getElementById("prima");
+        var cuotaMensualInput = document.getElementById("cuotaMensual");
+    
+        // Agregar un evento de cambio a los campos relevantes
+        precioProductoInput.addEventListener("input", calcularCuotaMensual);
+        interesMensualInput.addEventListener("input", calcularCuotaMensual);
+        mesesPlazoInput.addEventListener("input", calcularCuotaMensual);
+        primaInput.addEventListener("input", calcularCuotaMensual);
+
+
+    // Función para calcular la cuota mensual
+    function calcularCuotaMensual() {
+        let precioProducto = parseFloat(precioProductoInput.value);
+        let interesMensual = parseFloat(interesMensualInput.value) / 100; // Convertir a decimal
+        let mesesPlazo = parseFloat(mesesPlazoInput.value);
+        let prima = parseFloat(primaInput.value);
+
+        // Calcular el monto del préstamo (precio del producto - prima)
+        let montoPrestamo = precioProducto - prima;
+
+        // Calcular la cuota mensual
+        if (!isNaN(precioProducto) && !isNaN(interesMensual) && !isNaN(mesesPlazo) && !isNaN(prima)) {
+            let tasaInteresMensual = Math.pow(1 + interesMensual, mesesPlazo);
+            let cuotaMensual = (montoPrestamo * interesMensual * tasaInteresMensual) / (tasaInteresMensual - 1);
+            cuotaMensualInput.value = cuotaMensual.toFixed(2); // Mostrar dos decimales
+        } else {
+            cuotaMensualInput.value = ""; // Limpiar el campo si falta algún valor
+        }
+    }
 
     //autocomplete clientes
     $("#buscarCliente").autocomplete({
@@ -66,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 idCliente: idCliente.value,
                 metodo: metodo.value,
                 descuento: descuento.value,
-                pago: pagar_con.value,
+                pago: precioProducto.value,
                 //impresion: impresion_directa.checked
             }));
             //verificar estados
@@ -112,13 +183,15 @@ document.addEventListener('DOMContentLoaded', function () {
             url: base_url + 'ventas/listar',
             dataSrc: ''
         },
-        columns: [
+        columns: [            
+            { data: 'serie' },
             { data: 'fecha' },
             { data: 'hora' },
-            { data: 'total' },
-            { data: 'nombre' },
-            { data: 'serie' },
             { data: 'metodo' },
+            { data: 'descuento' },
+            { data: 'estado' },
+            { data: 'nombre' },
+            { data: 'total' },
             { data: 'acciones' }
         ],
         language: {
@@ -131,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     //calcular cambio
-    pagar_con.addEventListener('keyup', function (e) {
+    precioProducto.addEventListener('keyup', function (e) {
         if (totalPagar.value != '') {
             let totalDescuento = descuento.value != '' ? descuento.value : 0;
             let totalCambio = parseFloat(e.target.value) - (parseFloat(totalPagarHidden.value) - parseFloat(totalDescuento));
@@ -144,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (totalPagar.value != '') {
             let nuevoTotal = parseFloat(totalPagarHidden.value) - parseFloat(e.target.value);
             totalPagar.value = nuevoTotal.toFixed(2);
-            let nuevoCambio = parseFloat(pagar_con.value) - parseFloat(nuevoTotal);
+            let nuevoCambio = parseFloat(precioProducto.value) - parseFloat(nuevoTotal);
             cambio.value = nuevoCambio.toFixed(2);
         }       
     })

@@ -36,7 +36,7 @@ class AdminModel extends Query{
 
     public function topProductos($cantidad)
     {
-        $sql = "SELECT p.*, c.categoria FROM productos p INNER JOIN categorias c ON p.id_categoria = c.id ORDER BY p.ventas DESC LIMIT $cantidad";
+        $sql = "SELECT p.*, c.categoria FROM productos p INNER JOIN categorias c ON p.id_categoria = c.id ";
         return $this->selectAll($sql);
     }
 
