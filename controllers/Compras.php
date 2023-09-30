@@ -29,6 +29,27 @@ class Compras extends Controller
         $data['carrito'] = 'posCompra';
         $this->views->getView('compras', 'index', $data);
     }
+    public function listar()
+    {
+        $data = $this->model->getCompras();
+
+        for ($i = 0; $i < count($data); $i++) {
+            if ($data[$i]['estado'] == 1) {
+                $data[$i]['acciones'] = '<div>
+                <a class="btn btn-warning" href="#" onclick="anularCompra(' . $data[$i]['id'] . ')"><i class="fas fa-trash"></i></a>
+                <a class="btn btn-danger" href="#" onclick="verReporte(' . $data[$i]['id'] . ')"><i class="fas fa-file-pdf"></i></a>
+                </div>';
+            } else {
+                $data[$i]['acciones'] = '<div>
+                <span class="badge bg-info">Anulado</span>
+                <a class="btn btn-danger" href="#" onclick="verReporte(' . $data[$i]['id'] . ')"><i class="fas fa-file-pdf"></i></a>
+                </div>';
+            }
+        }
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        die();
+    }
+
     public function registrarCompra()
     {
         $json = file_get_contents('php://input');
@@ -121,25 +142,7 @@ class Compras extends Controller
         $dompdf->stream('ticked.pdf', array('Attachment' => false));
     }
 
-    public function listar()
-    {
-        $data = $this->model->getCompras();
-        for ($i = 0; $i < count($data); $i++) {
-            if ($data[$i]['estado'] == 1) {
-                $data[$i]['acciones'] = '<div>
-                <a class="btn btn-warning" href="#" onclick="anularCompra(' . $data[$i]['id'] . ')"><i class="fas fa-trash"></i></a>
-                <a class="btn btn-danger" href="#" onclick="verReporte(' . $data[$i]['id'] . ')"><i class="fas fa-file-pdf"></i></a>
-                </div>';
-            } else {
-                $data[$i]['acciones'] = '<div>
-                <span class="badge bg-info">Anulado</span>
-                <a class="btn btn-danger" href="#" onclick="verReporte(' . $data[$i]['id'] . ')"><i class="fas fa-file-pdf"></i></a>
-                </div>';
-            }
-        }
-        echo json_encode($data);
-        die();
-    }
+
 
     public function anular($idCompra)
     {

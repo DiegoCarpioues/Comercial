@@ -1,4 +1,4 @@
-let tblProductos;
+
 const formulario = document.querySelector('#formulario');
 const btnAccion = document.querySelector('#btnAccion');
 const btnNuevo = document.querySelector('#btnNuevo');
@@ -21,7 +21,7 @@ const errorCategoria = document.querySelector('#errorCategoria');
 
 document.addEventListener('DOMContentLoaded', function () {
     //cargar datos con el plugin datatables
-    tblProductos = $('#tblProductos').DataTable({
+     $('#tblProductos').DataTable({
         ajax: {
             url: base_url + 'productos/listar',
             dataSrc: ''

@@ -203,13 +203,16 @@ class Productos extends Controller
     }
 
     //buscar Productos por codigo
-    public function buscarPorCodigo($valor)
+    public function buscarPorCodigo()
     {
-        $array = array('estado' => false, 'datos' => '');
+        $array = array();
+        $valor = $_GET['term'];
+        $array = array();
         $data = $this->model->buscarPorCodigo($valor);
-        if (!empty($data)) {
-            $array['estado'] = true;
-            $array['datos'] = $data;
+        foreach ($data as $row) {
+            $result['id'] = $row['id'];
+            $result['label'] = $row['codigo'];
+            array_push($array, $result);
         }
         echo json_encode($array, JSON_UNESCAPED_UNICODE);
         die();
@@ -222,10 +225,11 @@ class Productos extends Controller
         $data = $this->model->buscarPorNombre($valor);
         foreach ($data as $row) {
             $result['id'] = $row['id'];
-            $result['label'] = $row['descripcion'];
-            $result['stock'] = $row['cantidad'];
+            $result['label'] = $row['producto'];
+            //$result['precio'] = $row['precio'];
+/*             $result['stock'] = $row['cantidad'];
             $result['precio_venta'] = $row['precio_venta'];
-            $result['precio_compra'] = $row['precio_compra'];
+            $result['precio_compra'] = $row['precio_compra'];  */
             array_push($array, $result);
         }
         echo json_encode($array, JSON_UNESCAPED_UNICODE);

@@ -16,7 +16,7 @@ function insertarRegistros(url, idFormulario, tbl, idButton, accion) {
     //verificar estados
     http.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-            console.log("Hello: "+this.responseText);
+            console.log("Error: "+this.responseText);
             const res = JSON.parse(this.responseText);
             Swal.fire({
                 toast: true,
