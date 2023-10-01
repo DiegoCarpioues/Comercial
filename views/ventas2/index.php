@@ -74,53 +74,40 @@
                             <span class="input-group-text"><i class="fas fa-search"></i></span>
                             <input class="form-control" type="text" id="buscarCliente" placeholder="Buscar Cliente">
                         </div>
-
                         <span class="text-danger fw-bold mb-2" id="errorCliente"></span>
-
-                        <label>Telefono</label>
-                        <div class="input-group mb-2">
-                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                            <input class="form-control" type="text" id="telefonoCliente" placeholder="Telefono" disabled>
-                        </div>
-
-                        <label>Dirección</label>
-                        <div class="input-group mb-2">
-                            <span class="input-group-text"><i class="fas fa-home"></i></span>
-                            <input class="form-control" type="text" id="direccionCliente" placeholder="Dirección">
-                        </div>
-
-                        <div class="esCredito">
-                            <label>Interes Mensual</label>
-                            <div class="input-group mb-2">
-                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                                <input class="form-control" type="text" id="interesMensual" placeholder="0.00">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label> precioProducto </label>
-                        <div class="input-group mb-2">
-                            <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                            <input class="form-control" type="text" id="precioProducto" placeholder="0.00">
-                        </div>
-                        <label>Cambio</label>
-                        <div class="input-group mb-2">
-                            <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                            <input class="form-control" type="text" id="cambio" placeholder="0.00" readonly>
-                        </div>
+                        
                         <label>Vendedor</label>
                         <div class="input-group mb-2">
                             <span class="input-group-text"><i class="fas fa-user"></i></span>
                             <input class="form-control" type="text" value="<?php echo $_SESSION['nombre_usuario']; ?>" placeholder="Vendedor" disabled>
                         </div>
-                        <div class="esCredito">
-                            <label>Prima</label>
-                            <div class="input-group mb-2">
-                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                                <input class="form-control" type="text" id="prima" placeholder="0.00">
-                            </div>
+                        <label>Serie</label>
+                        <div class="input-group md-2">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            <input type="text" id="serie" class="form-control" placeholder="serie">
                         </div>
+                        
+                    </div>
+                    <div class="col-md-4">
+                        <label>Fecha</label>
+                        <div class="input-group md-2">
+                            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                            <input type="date" id="fecha" class="form-control" placeholder="fecha" disabled>
+                        </div>
+
+                        <label>Hora</label>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                            <input type="time" id="hora" class="form-control" placeholder="hora" disabled>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="metodo">Metodo</label>
+                            <select id="metodo" class="form-control">
+                                <option value="CONTADO">CONTADO</option>
+                                <option value="CREDITO">CREDITO</option>
+                            </select>
+                        </div>
+                        
                     </div>
                     <div class="col-md-4">                       
                         <label>Descuento</label>
@@ -134,29 +121,6 @@
                             <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
                             <input class="form-control" type="text" id="totalPagar" placeholder="Total Pagar" disabled>
                             <input class="form-control" type="hidden" id="totalPagarHidden" >
-                        </div>
-
-                        <div class="form-group mb-2">
-                            <label for="metodo">Metodo</label>
-                            <select id="metodo" class="form-control">
-                                <option value="CONTADO">CONTADO</option>
-                                <option value="CREDITO">CREDITO</option>
-                            </select>
-                        </div>
-<!-- Al hacer esto da problemitas -->
-                        <div class="esCredito">
-                            <label>Meses plazo</label>
-                            <div class="input-group mb-2">
-                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                                <input class="form-control" type="number" id="mesesPlazo" placeholder="0.00">
-                            </div>
-                        
-                            <label>Cuota mensual</label>
-                            <div class="input-group mb-2">
-                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                                <input class="form-control" type="text" id="cuotaMensual" placeholder="Cuota mensual" disabled>
-                                <input class="form-control" type="hidden" id="cuotaMensualHidden" >
-                            </div>
                         </div>
                         <div class="d-grid">
                             <button class="btn btn-primary" type="button" id="btnAccion">Completar</button>
@@ -179,15 +143,13 @@
                     <table class="table table-bordered table-striped table-hover align-middle nowrap" id="tblHistorial" style="width: 100%;">
                         <thead>
                             <tr>
-                                <th>Serie</th>
                                 <th>Fecha</th>
                                 <th>Hora</th>
-                                <th>Metodo</th>
-                                <th>Descuento</th>
-                                <th>Estado</th>
-                                <th>Cliente</th>
                                 <th>Total</th>
-                                <th>Acciones</th>
+                                <th>Cliente</th>
+                                <th>Serie</th>
+                                <th>Metodo</th>
+                                <th></th>
                             </tr>
                         </thead>
 
@@ -202,3 +164,26 @@
 </div>
 
 <?php include_once 'views/templates/footer.php'; ?>
+0
+<script>
+    // Obtén la referencia al elemento de entrada de fecha por su ID
+    var fechaInput = document.getElementById('fecha');
+
+    // Crea una nueva fecha y obtén su valor en el formato YYYY-MM-DD
+    var today = new Date().toISOString().slice(0, 10);
+
+    // Establece el valor de la fecha actual en el campo de entrada
+    fechaInput.value = today;
+</script>
+<script>
+    // Obtén la referencia al elemento de entrada de hora por su ID
+    var horaInput = document.getElementById('hora');
+
+    // Crea una nueva fecha y obtén su hora y minutos
+    var now = new Date();
+    var hours = now.getHours().toString().padStart(2, '0');
+    var minutes = now.getMinutes().toString().padStart(2, '0');
+
+    // Establece el valor de la hora actual en el campo de entrada
+    horaInput.value = hours + ':' + minutes;
+</script>

@@ -36,7 +36,17 @@ class VentasModel extends Query{
 
     public function getVentas()
     {
-        $sql = "SELECT v.*, c.nombre FROM ventas v INNER JOIN clientes c ON v.id_cliente = c.id";
+        //$sql = "SELECT v.*, c.nombre FROM ventas v INNER JOIN clientes c ON v.id_cliente = c.id";
+
+        $sql = "SELECT
+        ventas.id, ventas.fecha, ventas.hora, ventas.metodo, ventas.descuento, 
+        ventas.serie, ventas.estado, clientes.nombre,
+        SUM((productos.ganancia/100) * compras.precio + compras.precio - ventas.descuento) AS total
+        FROM ventas
+        INNER JOIN clientes	ON ventas.id_cliente = clientes.id
+        INNER JOIN detalle_venta ON ventas.id = detalle_venta.id_venta
+        INNER JOIN compras ON  detalle_venta.id_compra = compras.id
+        INNER JOIN productos ON compras.id_productos = productos.id";
         return $this->selectAll($sql);
     }
 
