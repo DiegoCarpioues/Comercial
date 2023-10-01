@@ -72,4 +72,30 @@ class ProductosModel extends Query{
         return $this->select($sql);
     }
 
+   /*  public function buscarProdDispVentas($valor)//buscar producto disponible para la venta
+    {
+        //$sql = "SELECT * FROM productos WHERE codigo LIKE '%".$valor."%' AND estado = 1 LIMIT 10";
+        $sql = "SELECT
+        p.id,
+        p.producto, 
+        p.codigo, 
+        p.ganancia, 
+        c.cantidad,
+        (c.precio + ( c.precio * p.ganancia )) AS total
+    FROM
+        detalle_venta
+        INNER JOIN
+        compras c
+        ON 
+            detalle_venta.id_compra = c.id
+        INNER JOIN
+        productos p
+        ON 
+            c.id_productos = p.id
+        
+        WHERE p.producto LIKE '%".$valor."%'
+        ";
+        return $this->selectAll($sql);
+    } */
+
 }

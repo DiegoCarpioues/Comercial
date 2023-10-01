@@ -35,13 +35,13 @@
                 <!-- input para buscar codigo -->
                 <div class="input-group mb-2" id="containerCodigo">
                     <span class="input-group-text"><i class="fas fa-search"></i></span>
-                    <input class="form-control" type="text" id="buscarProductoCodigo" placeholder="Ingrese Barcode - Enter" autocomplete="off">
+                    <input class="form-control" type="text" id="buscarProductoCodigoVenta" placeholder="Ingrese Barcode - Enter" autocomplete="off">
                 </div>
 
                 <!-- input para buscar nombre -->
                 <div class="input-group d-none mb-2" id="containerNombre">
                     <span class="input-group-text"><i class="fas fa-search"></i></span>
-                    <input class="form-control" type="text" id="buscarProductoNombre" placeholder="Buscar Producto" autocomplete="off">
+                    <input class="form-control" type="text" id="buscarProductoNombreVenta" placeholder="Buscar Producto" autocomplete="off">
                 </div>
 
                 <span class="text-danger fw-bold mb-2" id="errorBusqueda"></span>
@@ -99,10 +99,10 @@
                     </div>
 
                     <div class="col-md-4">
-                        <label> precioProducto </label>
+                        <label> Venta Total </label>
                         <div class="input-group mb-2">
                             <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                            <input class="form-control" type="text" id="precioProducto" placeholder="0.00">
+                            <input class="form-control" type="text" id="sumaTotal" placeholder="0.00">
                         </div>
                         <label>Cambio</label>
                         <div class="input-group mb-2">

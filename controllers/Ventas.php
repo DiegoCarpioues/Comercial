@@ -358,4 +358,24 @@ class Ventas extends Controller
         echo json_encode($res, JSON_UNESCAPED_UNICODE);
         die();
     }
+
+     //buscar Productos por nombre
+     public function buscarProdDispVentas()
+     {
+         $array = array();
+         $valor = $_GET['term'];
+         $data = $this->model->buscarProdDispVentas($valor);
+         foreach ($data as $row) {
+             $result['id'] = $row['id'];
+             $result['label'] = $row['producto'];
+             $result['precio'] = $row['precio'];
+ /*             $result['stock'] = $row['cantidad'];
+             $result['precio_venta'] = $row['precio_venta'];
+             $result['precio_compra'] = $row['precio_compra'];  */
+             array_push($array, $result);
+         }
+         echo json_encode($array, JSON_UNESCAPED_UNICODE);
+         die();
+     }
+
 }

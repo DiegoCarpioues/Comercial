@@ -3,6 +3,35 @@ class VentasModel extends Query{
     public function __construct() {
         parent::__construct();
     }
+
+    /* para ventas */
+    public function buscarProdDispVentas($valor)//buscar producto disponible para la venta
+    {
+        //$sql = "SELECT * FROM productos WHERE codigo LIKE '%".$valor."%' AND estado = 1 LIMIT 10";
+        $sql = "SELECT
+        p.id AS id,
+        p.producto, 
+        p.codigo, 
+        p.ganancia, 
+        c.cantidad,
+        (c.precio + ( c.precio * p.ganancia )) AS precio
+    FROM
+        detalle_venta
+        INNER JOIN
+        compras c
+        ON 
+            detalle_venta.id_compra = c.id
+        INNER JOIN
+        productos p
+        ON 
+            c.id_productos = p.id
+        
+            WHERE p.producto LIKE '%".$valor."%' 
+            OR p.codigo LIKE '%".$valor."%'
+        ";
+        return $this->selectAll($sql);
+    }
+
     public function getProducto($idProducto)
     {
         $sql = "SELECT * FROM productos WHERE id = $idProducto";
