@@ -1,5 +1,5 @@
 
-const tblNuevaCompra = document.querySelector('#tblNuevaCompra tbody');
+
 const serie = document.querySelector('#serie');
 //provedores
 const telefonoProveedor = document.querySelector('#telefonoProveedor');
@@ -8,6 +8,7 @@ const idProveedor = document.querySelector('#idProveedor');
 const errorProveedor = document.querySelector('#errorProveedor');
 
 document.addEventListener('DOMContentLoaded', function () {
+
  $('#tblHistorial').DataTable({
       ajax: {
           url: base_url + 'compras/listar',
@@ -31,6 +32,9 @@ document.addEventListener('DOMContentLoaded', function () {
       responsive: true,
       order: [[0, 'desc']],
   });
+
+
+
     //autocomplete proveedores
     $("#buscarProveedor").autocomplete({
         source: function (request, response) {
@@ -129,6 +133,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 })
+
+
+  
 
 //cargar productos
 function mostrarProducto() {

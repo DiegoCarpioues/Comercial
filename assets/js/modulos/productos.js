@@ -1,4 +1,4 @@
-
+let tblProductos;
 const formulario = document.querySelector('#formulario');
 const btnAccion = document.querySelector('#btnAccion');
 const btnNuevo = document.querySelector('#btnNuevo');
@@ -21,7 +21,7 @@ const errorCategoria = document.querySelector('#errorCategoria');
 
 document.addEventListener('DOMContentLoaded', function () {
     //cargar datos con el plugin datatables
-     $('#tblProductos').DataTable({
+    tblProductos=$('#tblProductos').DataTable({
         ajax: {
             url: base_url + 'productos/listar',
             dataSrc: ''
@@ -103,6 +103,8 @@ function deleteImg() {
 function eliminarProducto(idProducto) {
     const url = base_url + 'productos/eliminar/' + idProducto;
     eliminarRegistros(url, tblProductos);
+
+    
 }
 
 function editarProducto(idProducto) {

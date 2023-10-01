@@ -43,9 +43,9 @@
                         <thead>
                             <tr>
                                 <th>Producto</th>
-                                <th>Precio</th>
                                 <th>Cantidad</th>
-                                <th>SubTotal</th>
+                                <th>Precio</th>
+                                <th>Subtotal</th>
                                 <th></th>
                             </tr>
                         </thead>

@@ -66,7 +66,7 @@
                         <div class="col-md-5 mb-3">
                             <label for="nombre">Producto <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-list"></i></span>
+                                <span class="input-group-text"><i class="fas fa-box-archive"></i></span>
                                 <input class="form-control" type="text" name="producto" id="producto" placeholder="Producto">
                             </div>
                             <span id="errorProducto" class="text-danger"></span>
@@ -74,7 +74,7 @@
                         <div class="col-md-3 mb-3">
                             <label for="precio_compra">Marca <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
                                 <input class="form-control" type="text" name="marca" id="marca" placeholder="Marca">
                             </div>
                             <span id="errorMarca" class="text-danger"></span>
@@ -82,7 +82,7 @@
                         <div class="col-md-3 mb-3">
                             <label for="precio_venta">Modelo <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                <span class="input-group-text"><i class="fas fa-paperclip"></i></span>
                                 <input class="form-control" type="text" name="modelo" id="modelo" placeholder="Modelo">
                             </div>
                             <span id="errorModelo" class="text-danger"></span>
@@ -91,7 +91,7 @@
                         <div class="col-md-3 mb-3">
                             <label for="precio_venta">Ganancia <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                <span class="input-group-text"><i class="fas fa-percent"></i></span>
                                 <input class="form-control" type="number" step="0.01" min="0.01" name="ganancia" id="ganancia" placeholder="Ganancia">
                             </div>
                             <span id="errorGanancia" class="text-danger"></span>
