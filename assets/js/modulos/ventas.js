@@ -12,6 +12,7 @@ const idCliente = document.querySelector("#idCliente");
 const telefonoCliente = document.querySelector("#telefonoCliente");
 const direccionCliente = document.querySelector("#direccionCliente");
 const errorCliente = document.querySelector("#errorCliente");
+const errorPago = document.querySelector("#errorPago");
 
 const descuento = document.querySelector("#descuento");
 const metodo = document.querySelector("#metodo");
@@ -25,13 +26,13 @@ const cambio = document.querySelector("#cambio");
 
 document.addEventListener("DOMContentLoaded", function () {
   //cargar productos de localStorage
-  mostrarProducto();
+  //mostrarProducto();
 
-  // Obtener referencia al elemento select
-  var metodoPagoSelect = document.getElementById("metodo");
+    // Obtener referencia al elemento select
+    var metodoPagoSelect = document.getElementById("metodo");
 
-  // Obtener una lista de elementos con la clase deseada
-  var elementosOcultarMostrar = document.querySelectorAll(".esCredito");
+    // Obtener una lista de elementos con la clase deseada
+    var elementosOcultarMostrar = document.querySelectorAll(".esCredito");
 
   // Ocultar los elementos al cargar la página (por defecto)
   ocultarElementos();
@@ -49,6 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Obtener una lista de elementos con la clase deseada
     var elementosOcultarMostrar = document.querySelectorAll(".esCredito");
+    var elementOcultContado = document.querySelectorAll(".esContado");
 
     // Ocultar o mostrar los elementos según el método de pago seleccionado
     elementosOcultarMostrar.forEach(function (elemento) {
@@ -58,24 +60,41 @@ document.addEventListener("DOMContentLoaded", function () {
         elemento.style.display = "block";
       }
     });
+
+    elementOcultContado.forEach(function (elemento) {
+        if (selectedValue === "CONTADO") {
+          elemento.style.display = "block";
+        } else if (selectedValue === "CREDITO") {
+          elemento.style.display = "none";
+        }
+      });
   });
 
   // Obtener referencias a los elementos HTML
-  var precioProductoInput = document.getElementById("precioProducto");
+  var sumaTotalVentaInput = document.getElementById("sumaTotalVenta");
   var interesMensualInput = document.getElementById("interesMensual");
   var mesesPlazoInput = document.getElementById("mesesPlazo");
   var primaInput = document.getElementById("prima");
   var cuotaMensualInput = document.getElementById("cuotaMensual");
+  var totalPagarInput = document.getElementById("totalPagar");
+  var descuentoInput = document.getElementById("descuento");
+  var pagoInput = document.getElementById("pago");
+  var cambioInput = document.getElementById("cambio");
 
   // Agregar un evento de cambio a los campos relevantes
-  precioProductoInput.addEventListener("input", calcularCuotaMensual);
+  sumaTotalVentaInput.addEventListener("input", calcularCuotaMensual);
   interesMensualInput.addEventListener("input", calcularCuotaMensual);
   mesesPlazoInput.addEventListener("input", calcularCuotaMensual);
   primaInput.addEventListener("input", calcularCuotaMensual);
+  //totalPagarInput.addEventListener("input", calcularTotalPago);
+  sumaTotalVentaInput.addEventListener("input", calcularTotalPago);
+  descuentoInput.addEventListener("input", calcularTotalPago);
+  totalPagarInput.addEventListener("input", calcularCambio);
+  pagoInput.addEventListener("input", calcularCambio);
 
   // Función para calcular la cuota mensual
   function calcularCuotaMensual() {
-    let precioProducto = parseFloat(precioProductoInput.value);
+    let precioProducto = parseFloat(sumaTotalVentaInput.value);
     let interesMensual = parseFloat(interesMensualInput.value) / 100; // Convertir a decimal
     let mesesPlazo = parseFloat(mesesPlazoInput.value);
     let prima = parseFloat(primaInput.value);
@@ -100,6 +119,41 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  // Función para calcular el total a pagar
+  function calcularTotalPago() {
+    var sumaTotalVenta = parseFloat(sumaTotalVentaInput.value) || 0;
+    var descuentoPorcentaje = parseFloat(descuentoInput.value) || 0;
+    var descuento = (descuentoPorcentaje / 100) * sumaTotalVenta;
+    var totalPagar = sumaTotalVenta - descuento;
+  
+    if(descuentoPorcentaje == 0){
+        totalPagarInput.value = sumaTotalVenta;
+    }else{
+        totalPagarInput.value = totalPagar.toFixed(2);
+    }
+    
+  }
+
+  function calcularCambio(){
+    let totalPago = parseFloat(totalPagarInput.value);
+    let pago = parseFloat(pagoInput.value);
+    let cambio = 0.00;
+    
+    if(pago >= totalPago){
+        cambio = pago - totalPago;
+        cambioInput.value = cambio.toFixed(2); // Mostrar dos decimales
+        errorPago.textContent = "";
+    } else {
+        errorPago.textContent = "EL PAGO DEBE SER MAYOR AL TOTAL A PAGAR";
+        cambioInput.value = "ERROR";
+    }
+    if(pago == 0){
+        errorPago.textContent = "";
+        cambioInput.value = "0.00";
+    }
+  }
+
+
   //autocomplete clientes
   $("#buscarCliente").autocomplete({
     source: function (request, response) {
@@ -122,7 +176,7 @@ document.addEventListener("DOMContentLoaded", function () {
     minLength: 2,
     select: function (event, ui) {
       telefonoCliente.value = ui.item.telefono;
-      direccionCliente.innerHTML = ui.item.direccion;
+      direccionCliente.value = ui.item.direccion;
       idCliente.value = ui.item.id;
     },
   });
@@ -216,28 +270,6 @@ document.addEventListener("DOMContentLoaded", function () {
     order: [[4, "desc"]],
   });
 
-  //calcular cambio
-  precioProducto.addEventListener("keyup", function (e) {
-    if (totalPagar.value != "") {
-      let totalDescuento = descuento.value != "" ? descuento.value : 0;
-      let totalCambio =
-        parseFloat(e.target.value) -
-        (parseFloat(totalPagarHidden.value) - parseFloat(totalDescuento));
-      cambio.value = totalCambio.toFixed(2);
-    }
-  });
-
-  //calcular descuento
-  descuento.addEventListener("keyup", function (e) {
-    if (totalPagar.value != "") {
-      let nuevoTotal =
-        parseFloat(totalPagarHidden.value) - parseFloat(e.target.value);
-      totalPagar.value = nuevoTotal.toFixed(2);
-      let nuevoCambio =
-        parseFloat(precioProducto.value) - parseFloat(nuevoTotal);
-      cambio.value = nuevoCambio.toFixed(2);
-    }
-  });
 });
 
 /* creo esta es de borrarla */
@@ -437,7 +469,7 @@ function llenartablaVentas(ui, listaDeProductos) {
   $("#buscarProductoCodigoVenta").val('');
   $("#buscarProductoNombreVenta").val('');
     // Llama a la función para calcular la suma total inicialmente
-    calcularSumaTotal();
+    calcularSumaTotalVenta();
   
     // Escuchar cambios en los campos de precio y cantidad para esta nueva fila
     $(`#precio_${nuevoIndex}, #cantidad_${nuevoIndex}`).on("input", function () {
@@ -455,21 +487,72 @@ function llenartablaVentas(ui, listaDeProductos) {
       $("#subtotal_" + index).text(subtotal.toFixed(2));
   
       // Llama a la función para recalcular la suma total
-      calcularSumaTotal();
+      calcularSumaTotalVenta();
     });
   
     // Función para calcular y mostrar la suma total
-    function calcularSumaTotal() {
-      var sumaTotal = 0;
+    function calcularSumaTotalVenta() {
+      var sumaTotalVenta = 0;
       // Itera a través de todas las filas de la tabla
       $(".subtotal").each(function () {
         // Obtiene el valor del subtotal de cada fila y lo suma al total
-        sumaTotal += parseFloat($(this).text());
+        sumaTotalVenta += parseFloat($(this).text());
       });
   
       // Muestra la suma total en el campo "Venta Total"
-      $("#sumaTotal").val(sumaTotal.toFixed(2)); 
+      $("#sumaTotalVenta").val(sumaTotalVenta.toFixed(2)); 
+
+      if($("#descuento").val() <= 0){
+        $("#totalPagar").val(sumaTotalVenta.toFixed(2)); 
+      }else{
+        let sumaTotalVenta = parseFloat($("#sumaTotalVenta").val()) || 0;
+        let descuentoPorcentaje = parseInt($("#descuento").val()) || 0;
+        var descuento = (descuentoPorcentaje / 100) * sumaTotalVenta;
+        var totalPagar = sumaTotalVenta - descuento;
+
+      
+        if(descuentoPorcentaje == 0){
+            $("#totalPagar").val(sumaTotalVenta.toFixed(2));
+        }else{
+            $("#totalPagar").val(totalPagar.toFixed(2));
+        }
+      }
+       //calcular cambio
+       const errorPago = document.querySelector("#errorPago");
+       let totalAPagar = parseFloat($("#totalPagar").val());
+       let pago = parseFloat($("#pago").val());
+       let cambio = 0.00;
+       
+       if(pago >= totalAPagar){
+           cambio = pago - totalAPagar;
+
+           $("#cambio").val(cambio.toFixed(2));
+           errorPago.textContent = "";
+       } else {
+        if(pago > 0){
+            errorPago.textContent = "EL PAGO DEBE SER MAYOR AL TOTAL A PAGAR";
+            $("#cambio").val("ERROR");
+        }
+       }
+       
+
     }
+
+    // Escuchar clics en los botones de eliminar
+    $(".btnEliminar").on("click", function () {
+        // Obtener el índice del producto que se va a eliminar desde el atributo data-id
+        var index = $(this).data("id");
+    
+        // Eliminar la fila correspondiente de la tabla
+        $("#fila_" + index).remove();
+    
+        // Eliminar el producto correspondiente de la listaDeProductos (opcional)
+        listaDeProductos.splice(index, 1);
+    
+        // Llama a la función para recalcular la suma total
+        calcularSumaTotalVenta();
+    });
+  
   }
   
 

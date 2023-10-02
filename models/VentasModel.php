@@ -14,7 +14,7 @@ class VentasModel extends Query{
         p.codigo, 
         p.ganancia, 
         c.cantidad,
-        (c.precio + ( c.precio * p.ganancia )) AS precio
+        ROUND((c.precio + ( c.precio * p.ganancia/100 )), 2) AS precio
     FROM
         detalle_venta
         INNER JOIN
