@@ -59,7 +59,7 @@
                             <label for="codigo">Código <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-barcode"></i></span>
-                                <input class="form-control" type="text" name="codigo" id="codigo" placeholder="Barcode">
+                                <input class="form-control" type="text" name="codigo" id="codigo" onkeypress="return soloNumeros(event)" placeholder="Barcode">
                             </div>
                             <span id="errorCodigo" class="text-danger"></span>
                         </div>

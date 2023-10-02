@@ -212,6 +212,7 @@ class Productos extends Controller
         foreach ($data as $row) {
             $result['id'] = $row['id'];
             $result['label'] = $row['codigo'];
+            $result['producto'] = $row['producto'];
             array_push($array, $result);
         }
         echo json_encode($array, JSON_UNESCAPED_UNICODE);

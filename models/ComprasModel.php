@@ -8,10 +8,10 @@ class ComprasModel extends Query{
         $sql = "SELECT * FROM productos WHERE id = $idProducto";
         return $this->select($sql);
     }
-    public function registrarCompra($productos, $total, $fecha, $hora, $serie, $idproveedor, $idusuario)
+    public function registrarCompra($idproductos, $cantidad,$precio, $fecha, $hora, $serie,$apertura, $idproveedor, $idusuario,$estado)
     {
-        $sql = "INSERT INTO compras (productos, total, fecha, hora, serie, id_proveedor, id_usuario) VALUES (?,?,?,?,?,?,?)";
-        $array = array($productos, $total, $fecha, $hora, $serie, $idproveedor, $idusuario);
+        $sql = "INSERT INTO compras (id_productos, cantidad,precio, fecha, hora, serie, apertura, id_proveedor, id_usuario, estado) VALUES (?,?,?,?,?,?,?,?,?,?)";
+        $array = array($idproductos, $cantidad,$precio, $fecha, $hora, $serie, $apertura, $idproveedor, $idusuario,$estado);
         return $this->insertar($sql, $array);
     }
    // public function getEmpresa()
@@ -34,7 +34,11 @@ class ComprasModel extends Query{
 
     public function getCompras()
     {
-        $sql = "SELECT c.id, DATE_FORMAT(c.fecha,'%d-%m-%Y') as fecha, pro.producto, c.cantidad, c.precio, (c.cantidad *c.precio) as subtotal, p.nombre as proveedor, c.serie, c.estado FROM proveedor as p INNER JOIN compras as c ON p.id = c.id_proveedor INNER JOIN productos as pro ON c.id_productos = pro.id";
+        $sql = "SELECT c.id, DATE_FORMAT(c.fecha, '%d/%m/%Y') as fecha, DATE_FORMAT(c.hora, '%h:%i %p') as hora, pro.producto, c.cantidad, c.precio, (c.cantidad * c.precio) as subtotal, p.nombre as proveedor, c.serie, c.estado
+        FROM proveedor as p
+        INNER JOIN compras as c ON p.id = c.id_proveedor
+        INNER JOIN productos as pro ON c.id_productos = pro.id
+        ORDER BY c.fecha DESC, c.hora DESC;";
         return $this->selectAll($sql);
     }
 
