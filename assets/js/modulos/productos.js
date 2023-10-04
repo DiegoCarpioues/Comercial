@@ -1,4 +1,4 @@
-
+let tblProductos;
 const formulario = document.querySelector('#formulario');
 const btnAccion = document.querySelector('#btnAccion');
 const btnNuevo = document.querySelector('#btnNuevo');
@@ -21,7 +21,7 @@ const errorCategoria = document.querySelector('#errorCategoria');
 
 document.addEventListener('DOMContentLoaded', function () {
     //cargar datos con el plugin datatables
-     $('#tblProductos').DataTable({
+    tblProductos=$('#tblProductos').DataTable({
         ajax: {
             url: base_url + 'productos/listar',
             dataSrc: ''
@@ -103,6 +103,8 @@ function deleteImg() {
 function eliminarProducto(idProducto) {
     const url = base_url + 'productos/eliminar/' + idProducto;
     eliminarRegistros(url, tblProductos);
+
+    
 }
 
 function editarProducto(idProducto) {
@@ -145,3 +147,23 @@ function limpiarCampos() {
     containerPreview.innerHTML = '';
     errorDescripcion.textContent = '';
 }
+
+// ---- Validacion de Campos de tipo numericos ---- //
+function soloNumeros(e) {
+    var key = e.keyCode || e.which,
+      tecla = String.fromCharCode(key).toLowerCase(),
+      numeros = "0123456789",
+      especiales = [8, 37, 39, 46],
+      tecla_especial = false;
+  
+    for (var i in especiales) {
+      if (key == especiales[i]) {
+        tecla_especial = true;
+        break;
+      }
+    }
+  
+    if (numeros.indexOf(tecla) == -1 && !tecla_especial) {
+      return false;
+    }
+  };
