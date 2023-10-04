@@ -218,7 +218,7 @@ class Productos extends Controller
         echo json_encode($array, JSON_UNESCAPED_UNICODE);
         die();
     }
-    //buscar Productos por nombre
+    //buscar Productos por nombre  
     public function buscarPorNombre()
     {
         $array = array();
@@ -369,4 +369,19 @@ class Productos extends Controller
         // Output the generated PDF to Browser
         $dompdf->stream('reporte.pdf', array('Attachment' => false));
     }
+
+   /*  public function buscarProdNombreVenta()
+    {
+        $array = array();
+        $valor = $_GET['term'];
+        $data = $this->model->buscarProdDispVentas($valor);
+        foreach ($data as $row) {
+            $result['id'] = $row['id'];
+            $result['label'] = $row['producto'];
+            //$result['precio'] = $row['precio'];
+            array_push($array, $result);
+        }
+        echo json_encode($array, JSON_UNESCAPED_UNICODE);
+        die();
+    } */
 }
