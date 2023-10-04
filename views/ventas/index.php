@@ -27,7 +27,7 @@
                     <div class="col-md-3 mb-2">
                         <div class="input-group">
                             <span class="input-group-text">N° Factura</span>
-                            <input class="form-control" type="text" value="<?php echo $data['serie'][0]; ?>" disabled>
+                            <input class="form-control" type="text" id="serie" value="<?php echo $data['serie'][0]; ?>" disabled>
                         </div>
                     </div>
                 </div>
@@ -70,9 +70,10 @@
                     <div class="col-md-4">
                         <label>Buscar Cliente</label>
                         <div class="input-group mb-2">
-                            <input type="hidden" id="idCliente" value="1">
                             <span class="input-group-text"><i class="fas fa-search"></i></span>
                             <input class="form-control" type="text" id="buscarCliente" placeholder="Buscar Cliente">
+                            
+                            <input type="hidden" id="idCliente" >
                         </div>
 
                         <span class="text-danger fw-bold mb-2" id="errorCliente"></span>
@@ -90,7 +91,7 @@
                         <label>Vendedor</label>
                         <div class="input-group mb-2">
                             <span class="input-group-text"><i class="fas fa-user"></i></span>
-                            <input class="form-control" type="text" value="<?php echo $_SESSION['nombre_usuario']; ?>" placeholder="Vendedor" disabled>
+                            <input class="form-control" type="text" id="idUsuario" value="<?php echo $_SESSION['nombre_usuario']; ?>" placeholder="Vendedor" disabled>
                         </div>
                     </div>
 
@@ -160,7 +161,7 @@
                             </div>
                         </div>
                         <div class="d-grid">
-                            <button class="btn btn-primary" type="button" id="btnAccion">Completar</button>
+                            <button class="btn btn-primary" type="button" id="btnGuardarVenta">Completar</button>
                         </div>
                     </div>
                 </div>

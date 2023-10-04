@@ -9,6 +9,7 @@ const inputBuscarNombreVenta = document.querySelector(
 const tblNuevaVenta = document.querySelector("#tblNuevaVenta tbody");
 
 const idCliente = document.querySelector("#idCliente");
+const idUsuario = document.querySelector("#idUsuario");
 const telefonoCliente = document.querySelector("#telefonoCliente");
 const direccionCliente = document.querySelector("#direccionCliente");
 const errorCliente = document.querySelector("#errorCliente");
@@ -16,13 +17,16 @@ const errorPago = document.querySelector("#errorPago");
 
 const descuento = document.querySelector("#descuento");
 const metodo = document.querySelector("#metodo");
+const serie = document.querySelector("#serie");
+const pago = document.querySelector("#pago");
 const impresion_directa = document.querySelector("#impresion_directa");
+var listaDeProductos = [];
 
 const precioProducto = document.querySelector("#precioProducto");
 const totalPagarHidden = document.querySelector("#totalPagarHidden");
 const cambio = document.querySelector("#cambio");
 
-//const btnAccion = document.querySelector('#btnAccion');
+const btnGuardarVenta = document.querySelector('#btnGuardarVenta');
 
 document.addEventListener("DOMContentLoaded", function () {
   //cargar productos de localStorage
@@ -80,6 +84,12 @@ document.addEventListener("DOMContentLoaded", function () {
   var descuentoInput = document.getElementById("descuento");
   var pagoInput = document.getElementById("pago");
   var cambioInput = document.getElementById("cambio");
+  var totalAPagar = document.getElementById("totalPagar");
+  var prima = document.getElementById("prima");
+  var interesMensual = document.getElementById("interesMensual");
+  var mesesPlazo = document.getElementById("mesesPlazo");
+  var cuotaMensual = document.getElementById("cuotaMensual");
+  
 
   // Agregar un evento de cambio a los campos relevantes
   sumaTotalVentaInput.addEventListener("input", calcularCuotaMensual);
@@ -94,17 +104,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Función para calcular la cuota mensual
   function calcularCuotaMensual() {
-    let precioProducto = parseFloat(sumaTotalVentaInput.value);
+    let totalVenta = parseFloat(sumaTotalVentaInput.value);
     let interesMensual = parseFloat(interesMensualInput.value) / 100; // Convertir a decimal
     let mesesPlazo = parseFloat(mesesPlazoInput.value);
     let prima = parseFloat(primaInput.value);
 
     // Calcular el monto del préstamo (precio del producto - prima)
-    let montoPrestamo = precioProducto - prima;
+    let montoPrestamo = totalVenta - prima;
 
     // Calcular la cuota mensual
     if (
-      !isNaN(precioProducto) &&
+      !isNaN(totalVenta) &&
       !isNaN(interesMensual) &&
       !isNaN(mesesPlazo) &&
       !isNaN(prima)
@@ -182,10 +192,10 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   //completar venta
-  btnAccion.addEventListener("click", function () {
+  btnGuardarVenta.addEventListener("click", function () {
     let filas = document.querySelectorAll("#tblNuevaVenta tr").length;
     if (filas < 2) {
-      alertaPersonalizada("warning", "CARRITO VACIO");
+      alertaPersonalizada("warning", "CARRITO VACIOooo");
       return;
     } else if (metodo.value == "") {
       alertaPersonalizada("warning", "EL METODO ES REQUERIDO");
@@ -199,22 +209,33 @@ document.addEventListener("DOMContentLoaded", function () {
       //Enviar Datos
       http.send(
         JSON.stringify({
-          productos: listaCarrito,
+          productos: listaDeProductos,
           idCliente: idCliente.value,
+          idUsuario: idUsuario.value,
           metodo: metodo.value,
           descuento: descuento.value,
-          pago: precioProducto.value,
+          serie: serie.value,
+          pago: pago.value,
+          totalAPagar: totalAPagar.value,
+          prima: prima.value,
+          interesMensual: interesMensual.value,
+          mesesPlazo: mesesPlazo.value,
+          cuotaMensual: cuotaMensual.value
           //impresion: impresion_directa.checked
         })
       );
+      
       //verificar estados
       http.onreadystatechange = function () {
+        alert(this.readyState +" -- "+ this.status);
         if (this.readyState == 4 && this.status == 200) {
-          const res = JSON.parse(this.responseText);
+          //const res = JSON.parse(this.responseText);
           console.log(this.responseText);
-          alertaPersonalizada(res.type, res.msg);
-          if (res.type == "success") {
-            localStorage.removeItem(nombreKey);
+          alert(this.responseText);
+          //console.log(this.responseText);
+          //alertaPersonalizada(res.type, res.msg);
+          /* if (res.type == "success") {
+            localStorage.removeItem(nombreKey);//borrar
             setTimeout(() => {
               Swal.fire({
                 title: "Desea Generar Reporte?",
@@ -223,7 +244,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 confirmButtonText: "Ticked",
                 denyButtonText: `Factura`,
               }).then((result) => {
-                /* Read more about isConfirmed, isDenied below */
+                
                 if (result.isConfirmed) {
                   const ruta =
                     base_url + "ventas/reporte/ticked/" + res.idVenta;
@@ -238,7 +259,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }, 1500);
               });
             }, 2000);
-          }
+          } */
         }
       };
     }
@@ -271,54 +292,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
 });
-
-/* creo esta es de borrarla */
-//cargar productos
-/* function mostrarProducto() {
-  if (localStorage.getItem(nombreKey) != null) {
-    const url = base_url + "productos/mostrarDatos";
-    //hacer una instancia del objeto XMLHttpRequest
-    const http = new XMLHttpRequest();
-    //Abrir una Conexion - POST - GET
-    http.open("POST", url, true);
-    //Enviar Datos
-    http.send(JSON.stringify(listaCarrito));
-    //verificar estados
-    http.onreadystatechange = function () {
-      if (this.readyState == 4 && this.status == 200) {
-        const res = JSON.parse(this.responseText);
-        let html = "";
-        if (res.productos.length > 0) {
-          res.productos.forEach((producto) => {
-            html += `<tr>
-                            <td>${producto.nombre}</td>
-                            <td width="200">
-                            <input type="number" class="form-control inputPrecio" data-id="${8}" value="${8}">
-                            </td>
-                            <td width="150">
-                            <input type="number" class="form-control inputCantidad" data-id="${producto.id}" value="${producto.cantidad}">
-                            </td>
-                            <td>${producto.subTotalVenta}</td>
-                            <td><button class="btn btn-danger btnEliminar" data-id="${producto.id}" type="button"><i class="fas fa-trash"></i></button></td>
-                        </tr>`;
-          });
-          tblNuevaVenta.innerHTML = html;
-          totalPagar.value = res.totalVenta;
-          totalPagarHidden.value = res.totalVentaSD;
-          btnEliminarProducto();
-          agregarCantidad();
-          agregarPrecioVenta();
-        } else {
-          tblNuevaVenta.innerHTML = "";
-        }
-      }
-    };
-  } else {
-    tblNuevaVenta.innerHTML = `<tr>
-            <td colspan="4" class="text-center">CARRITO VACIO</td>
-        </tr>`;
-  }
-} */
 
 function verReporte(idVenta) {
   Swal.fire({
@@ -427,7 +400,7 @@ $("#buscarProductoNombreVenta, #buscarProductoCodigoVenta").autocomplete({
   
   minLength: 2,
   select: function (event, ui) {
-    llenartablaVentas(ui, listaDeProductos);
+    llenartablaVentas(ui);
     inputBuscarCodigoVenta.innerHTML = '';
     /* inputBuscarNombreVenta.innerHTML = ui.item.id;
     inputBuscarNombreVenta.focus(); */
@@ -435,13 +408,15 @@ $("#buscarProductoNombreVenta, #buscarProductoCodigoVenta").autocomplete({
   
 });
 
-function llenartablaVentas(ui, listaDeProductos) {
+function llenartablaVentas(ui) {
     // Agregar productos a listaDeProductos
     listaDeProductos.push({
       nombre: ui.item.label,
       cantidad: 0, //aquí se llenan los datos de la cantidad
       precio: ui.item.precio,
       subtotal: 0,
+      disponibles: ui.item.disponibles,
+      idCompra: ui.item.idCompra,
     });
   
     // Obtener el cuerpo de la tabla
@@ -474,12 +449,22 @@ function llenartablaVentas(ui, listaDeProductos) {
     // Escuchar cambios en los campos de precio y cantidad para esta nueva fila
     $(`#precio_${nuevoIndex}, #cantidad_${nuevoIndex}`).on("input", function () {
       // Obtener el índice del producto desde el atributo data-id
-      var index = $(this).data("id");
+      let index = $(this).data("id");
   
       // Obtener los valores de precio y cantidad
-      var precio = parseFloat($("#precio_" + index).val());
-      var cantidad = parseFloat($("#cantidad_" + index).val());
-  
+      let precio = parseFloat($("#precio_" + index).val());
+      let cantidad = parseInt($("#cantidad_" + index).val());
+      // Obtener la cantidad disponible del producto
+      let cantidadDisponible = listaDeProductos[index].disponibles;
+
+      //Validar el limite de compra segun la cantidad disponible
+      if( cantidad > cantidadDisponible ){
+        alertaPersonalizada("warning", "Cantidad máxima superada. La cantidad disponible es " + cantidadDisponible);
+        // Restablecer el valor de cantidad a la cantidad disponible
+        $("#cantidad_" + index).val(cantidadDisponible);
+        cantidad = parseInt(cantidadDisponible);
+      }
+
       // Calcular el subtotal
       var subtotal = precio * cantidad;
   
@@ -488,6 +473,9 @@ function llenartablaVentas(ui, listaDeProductos) {
   
       // Llama a la función para recalcular la suma total
       calcularSumaTotalVenta();
+
+      //asignandole los datos al array
+      listaDeProductos[index].cantidad = cantidad;
     });
   
     // Función para calcular y mostrar la suma total
@@ -553,119 +541,5 @@ function llenartablaVentas(ui, listaDeProductos) {
         calcularSumaTotalVenta();
     });
   
-  }
+}
   
-
-
-
-
-
-
-
-
-
-
-/* function llenartablaVentas(ui, listaDeProductos) {
-  // Agregar productos a listaDeProductos
-  listaDeProductos.push({
-    nombre: ui.item.label,
-    cantidad: 0, //aqui se llenan los datos de la cantidad
-    precio: ui.item.precio,
-    subtotal: 0,
-  });
-
-  let html = "";
-  if (listaDeProductos.length > 0) {
-    listaDeProductos.forEach((data, index) => {
-      
-      html += `<tr id="fila_${index}">
-  <td>${data.nombre}</td>
-  <td width="150">
-    <input type="number" min="1" class="form-control inputPrecio" data-id="${index}" id="precio_${index}" value="${data.precio}">
-  </td>
-  <td width="150">
-    <input type="number" min="0" class="form-control inputCantidad" data-id="${index}" id="cantidad_${index}" value="${data.cantidad}">
-  </td>
-  <td class="subtotal" id="subtotal_${index}">${data.subtotal}</td>
-  <td><button class="btn btn-danger btnEliminar" data-id="${index}" type="button"><i class="fas fa-trash"></i></button></td>
-</tr>`;
-    });
-  }
-
-  // Actualizar la tabla HTML
-  tblNuevaVenta.innerHTML = html;
-  // Llama a la función para calcular la suma total inicialmente
-  calcularSumaTotal();
-
-  // Escuchar cambios en los campos de precio y cantidad
-  $(".inputPrecio, .inputCantidad").on("input", function () {
-    // Obtener el índice del producto desde el atributo data-id
-    var index = $(this).data("id");
-
-    // Obtener los valores de precio y cantidad
-    var precio = parseFloat($("#precio_" + index).val());
-    var cantidad = parseFloat($("#cantidad_" + index).val());
-
-    // Calcular el subtotal
-    var subtotal = precio * cantidad;
-
-    // Actualizar el elemento HTML del subtotal
-    $("#subtotal_" + index).text(subtotal);
-
-    // Llama a la función para recalcular la suma total
-    calcularSumaTotal();
-  });
-
-  // Función para calcular y mostrar la suma total
-  function calcularSumaTotal() {
-    var sumaTotal = 0;
-    // Itera a través de todas las filas de la tabla
-    $(".subtotal").each(function () {
-      // Obtiene el valor del subtotal de cada fila y lo suma al total
-      sumaTotal += parseFloat($(this).text());
-    });
-
-    // Muestra la suma total en el elemento HTML
-    $("#sumaTotal").text("Total: $" + sumaTotal.toFixed(2)); // Asegúrate de formatear el resultado según tu preferencia de moneda
-  }
-
-  console.log(inputCantidadElements); // Agregar esta línea para verificar la selección de elementos
-  inputCantidadElements.forEach((inputCantidad) => {
-    alert("hola1");
-    inputCantidad.addEventListener("input", function () {
-      var index = parseInt(this.getAttribute("data-id"), 10);
-      var cantidad = parseInt(this.value, 10);
-      var precio = parseFloat(inputPrecioElements[index].value);
-      if (!isNaN(cantidad) && !isNaN(precio)) {
-        listaDeProductos[index].cantidad = cantidad;
-        listaDeProductos[index].subtotal = cantidad * precio;
-        actualizarSubtotal(index);
-      }
-    });
-  });
-
-  inputPrecioElements.forEach((inputPrecio) => {
-    alert("hola2");
-    inputPrecio.addEventListener("input", function () {
-      var index = parseInt(this.getAttribute("data-id"), 10);
-      var precio = parseFloat(this.value);
-      var cantidad = parseInt(inputCantidadElements[index].value, 10);
-      if (!isNaN(cantidad) && !isNaN(precio)) {
-        listaDeProductos[index].precio = precio;
-        listaDeProductos[index].subtotal = cantidad * precio;
-        actualizarSubtotal(index);
-      }
-    });
-  });
-
-}
-
-function actualizarSubtotal(index) {
-  var subtotalElement = document.querySelector(`.subtotal[data-id="${index}"]`);
-  alert("hola");
-  console.log(subtotalElement);
-  if (subtotalElement) {
-    subtotalElement.textContent = listaDeProductos[index].subtotal.toFixed(2);
-  }
-}
- */
