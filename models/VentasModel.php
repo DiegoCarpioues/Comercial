@@ -175,53 +175,53 @@ class VentasModel extends Query{
     {
         //$sql = "SELECT v.*, c.num_identidad, c.nombre, c.telefono, c.correo, c.direccion FROM ventas v INNER JOIN clientes c ON v.id_cliente = c.id WHERE v.id = $idVenta";
         $sql = " SELECT
-        ventas.id,
-        productos.id AS id_producto, 
-        productos.producto,
-        productos.descripcion,
-        ROUND(((productos.ganancia/100) * compras.precio) + compras.precio, 2)AS precio,
-        detalle_venta.cantidad,
-        ROUND(((((productos.ganancia/100) * compras.precio) + compras.precio) * detalle_venta.cantidad),2) AS total,
-        ventas.fecha,
-        ventas.hora,
-        ventas.metodo,
-        ventas.descuento,
-        ventas.serie,
-        ventas.pago,
-        ventas.estado,
-        clientes.id AS id_cliente, 
-        usuarios.id AS id_usuario, 
-        clientes.num_identidad, 
-        clientes.nombre, 
-        clientes.telefono, 
-        clientes.correo, 
-        clientes.direccion,
-        COUNT(ventas.id) AS cantProd
-    FROM
-        detalle_venta
-        INNER JOIN
-        compras
-        ON 
-            detalle_venta.id_compra = compras.id
-        INNER JOIN
-        productos
-        ON 
-            compras.id_productos = productos.id
-        INNER JOIN
-        ventas
-        ON 
-            detalle_venta.id_venta = ventas.id
-        INNER JOIN
-        clientes
-        ON 
-            ventas.id_cliente = clientes.id
-        INNER JOIN
-        usuarios
-        ON 
-            compras.id_usuario = usuarios.id AND
-            ventas.id_usuario = usuarios.id
-        WHERE ventas.id = '".$idVenta."'
-        GROUP BY detalle_venta.id ;
+            ventas.id,
+            productos.id AS id_producto, 
+            productos.producto,
+            productos.descripcion,
+            ROUND(((productos.ganancia/100) * compras.precio) + compras.precio, 2)AS precio,
+            detalle_venta.cantidad,
+            ROUND(((((productos.ganancia/100) * compras.precio) + compras.precio) * detalle_venta.cantidad),2) AS total,
+            ventas.fecha,
+            ventas.hora,
+            ventas.metodo,
+            ventas.descuento,
+            ventas.serie,
+            ventas.pago,
+            ventas.estado,
+            clientes.id AS id_cliente, 
+            usuarios.id AS id_usuario, 
+            clientes.num_identidad, 
+            clientes.nombre, 
+            clientes.telefono, 
+            clientes.correo, 
+            clientes.direccion,
+            COUNT(ventas.id) AS cantProd
+        FROM
+            detalle_venta
+            INNER JOIN
+            compras
+            ON 
+                detalle_venta.id_compra = compras.id
+            INNER JOIN
+            productos
+            ON 
+                compras.id_productos = productos.id
+            INNER JOIN
+            ventas
+            ON 
+                detalle_venta.id_venta = ventas.id
+            INNER JOIN
+            clientes
+            ON 
+                ventas.id_cliente = clientes.id
+            INNER JOIN
+            usuarios
+            ON 
+                compras.id_usuario = usuarios.id AND
+                ventas.id_usuario = usuarios.id
+            WHERE ventas.id = '".$idVenta."'
+            GROUP BY detalle_venta.id ;
             ";
         return $this->select($sql);
     }

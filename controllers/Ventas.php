@@ -117,22 +117,24 @@ class Ventas extends Controller
                             foreach ($compras as $compra) {
                                 $idCompra = $compra['idCompra'];
                                 if($cantAVender <= $producto['disponibles'] && $cantAVender > 0){
-                                    $proDispVen = $compra['disponibles'];//producto disponible para la venta de x compra
-                                    
-                                    if($proDispVen > $cantAVender){
-                                        $this->model->actualizarEstadoCompra($idCompra, 1);
-                                        $this->model->registraDetalleVenta($idCompra, $idVenta, $cantAVender);
-                                        $cantAVender = 0;
-                                        break; //salirse
-                                    }else if($proDispVen == $cantAVender){
-                                        $this->model->actualizarEstadoCompra($idCompra, 0);
-                                        $this->model->registraDetalleVenta($idCompra, $idVenta, $cantAVender);
-                                        $cantAVender = 0;
-                                        break;
-                                    }else if($proDispVen <= $cantAVender){
-                                        $this->model->actualizarEstadoCompra($idCompra, 0);
-                                        $this->model->registraDetalleVenta($idCompra, $idVenta, $proDispVen);
-                                        $cantAVender = $cantAVender - $proDispVen;
+                                    if($compra['disponibles'] != null && $compra['disponibles'] != "" && $compra['disponibles'] > 0){
+                                        $proDispVen = $compra['disponibles'];//producto disponible para la venta de x compra
+                                        
+                                        if($proDispVen > $cantAVender){
+                                            $this->model->actualizarEstadoCompra($idCompra, 1);
+                                            $this->model->registraDetalleVenta($idCompra, $idVenta, $cantAVender);
+                                            $cantAVender = 0;
+                                            break; //salirse
+                                        }else if($proDispVen == $cantAVender){
+                                            $this->model->actualizarEstadoCompra($idCompra, 0);
+                                            $this->model->registraDetalleVenta($idCompra, $idVenta, $cantAVender);
+                                            $cantAVender = 0;
+                                            break;
+                                        }else if($proDispVen <= $cantAVender){
+                                            $this->model->actualizarEstadoCompra($idCompra, 0);
+                                            $this->model->registraDetalleVenta($idCompra, $idVenta, $proDispVen);
+                                            $cantAVender = $cantAVender - $proDispVen;
+                                        }
                                     }
                                 }
                             }
@@ -168,7 +170,6 @@ class Ventas extends Controller
        // $data['empresa'] = $this->model->getEmpresa();
         $data['venta'] = $this->model->getVenta($idVenta);
         
-
         $dat = $this->model->getDetalleVenta($idVenta);
         foreach ($dat as $row) {
             $result['cantidad'] = $row['cantidad'];
@@ -177,7 +178,6 @@ class Ventas extends Controller
             $result['total'] = $row['total'];
             array_push($arrayDetProd, $result);
         }
-        //echo json_encode($array, JSON_UNESCAPED_UNICODE);
 
         $data['detalle_venta'] = $arrayDetProd;
         
@@ -381,8 +381,20 @@ class Ventas extends Controller
     // ENVIAR TICKET AL CORREO DEL CLIENTE
     public function enviarCorreo($idVenta)
     {
-        //$data['empresa'] = $this->model->getEmpresa();
+        $arrayDetProd = array();
+
+        $dat = $this->model->getDetalleVenta($idVenta);
+        foreach ($dat as $row) {
+            $result['cantidad'] = $row['cantidad'];
+            $result['descripcion'] = $row['descripcion'];
+            $result['precio'] = $row['precio'];
+            $result['total'] = $row['total'];
+            array_push($arrayDetProd, $result);
+        }
+
+        $data['detalle_venta'] = $arrayDetProd;
         $data['venta'] = $this->model->getVenta($idVenta);
+
         ob_start();
         $data['title'] = 'Reporte';
         $this->views->getView('ventas', 'ticket_cliente', $data);
