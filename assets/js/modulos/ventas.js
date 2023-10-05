@@ -134,14 +134,10 @@ document.addEventListener("DOMContentLoaded", function () {
     var sumaTotalVenta = parseFloat(sumaTotalVentaInput.value) || 0;
     var descuentoPorcentaje = parseFloat(descuentoInput.value) || 0;
     var descuento = (descuentoPorcentaje / 100) * sumaTotalVenta;
-    var totalPagar = sumaTotalVenta - descuento;
+    var total = (sumaTotalVenta - descuento);//total con descuento
+    var totalPagar = ((total * 0.13) + total);//total con IVA y descuento
   
-    if(descuentoPorcentaje == 0){
-        totalPagarInput.value = sumaTotalVenta;
-    }else{
-        totalPagarInput.value = totalPagar.toFixed(2);
-    }
-    
+    totalPagarInput.value = totalPagar.toFixed(2); 
   }
 
   function calcularCambio(){
@@ -230,16 +226,10 @@ document.addEventListener("DOMContentLoaded", function () {
       
       //verificar estados
       http.onreadystatechange = function () {
-        alert(this.readyState +" -- "+ this.status);
         if (this.readyState == 4 && this.status == 200) {
           console.log(this.responseText);
           const res = JSON.parse(this.responseText);
-          
-          alert(this.responseText);
-          //console.log(this.responseText);
-          //alertaPersonalizada(res.type, res.msg);
           if (res.type == "success") {
-            //localStorage.removeItem(nombreKey);//borrar
             setTimeout(() => {
               Swal.fire({
                 title: "Desea Generar Reporte?",
@@ -407,8 +397,6 @@ $("#buscarProductoNombreVenta, #buscarProductoCodigoVenta").autocomplete({
   select: function (event, ui) {
     llenartablaVentas(ui);
     inputBuscarCodigoVenta.innerHTML = '';
-    /* inputBuscarNombreVenta.innerHTML = ui.item.id;
-    inputBuscarNombreVenta.focus(); */
   },
   
 });
@@ -447,9 +435,7 @@ function llenartablaVentas(ui) {
   
     // Agregar la nueva fila al cuerpo de la tabla
     tablaBody.append(nuevaFila);
-  // Limpia los campos de entrada de código y nombre
-  $("#buscarProductoCodigoVenta").val('');
-  $("#buscarProductoNombreVenta").val('');
+
     // Llama a la función para calcular la suma total inicialmente
     calcularSumaTotalVenta();
   
@@ -497,21 +483,13 @@ function llenartablaVentas(ui) {
       // Muestra la suma total en el campo "Venta Total"
       $("#sumaTotalVenta").val(sumaTotalVenta.toFixed(2)); 
 
-      if($("#descuento").val() <= 0){
-        $("#totalPagar").val(sumaTotalVenta.toFixed(2)); 
-      }else{
-        let sumaTotalVenta = parseFloat($("#sumaTotalVenta").val()) || 0;
-        let descuentoPorcentaje = parseInt($("#descuento").val()) || 0;
-        var descuento = (descuentoPorcentaje / 100) * sumaTotalVenta;
-        var totalPagar = sumaTotalVenta - descuento;
+      var descuentoPorcentaje = parseFloat($("#descuento").val()) || 0;
+      var descuento = (descuentoPorcentaje / 100) * sumaTotalVenta;
+      var total = (sumaTotalVenta - descuento);//total con descuento
+      var totalPagar = ((total * 0.13) + total);//total con IVA y descuento
+  
+      $("#totalPagar").val(totalPagar.toFixed(2));
 
-      
-        if(descuentoPorcentaje == 0){
-            $("#totalPagar").val(sumaTotalVenta.toFixed(2));
-        }else{
-            $("#totalPagar").val(totalPagar.toFixed(2));
-        }
-      }
        //calcular cambio
        const errorPago = document.querySelector("#errorPago");
        let totalAPagar = parseFloat($("#totalPagar").val());
@@ -529,8 +507,6 @@ function llenartablaVentas(ui) {
             $("#cambio").val("ERROR");
         }
        }
-       
-
     }
 
     // Escuchar clics en los botones de eliminar
