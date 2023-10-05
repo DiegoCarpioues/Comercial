@@ -276,8 +276,8 @@ document.addEventListener("DOMContentLoaded", function () {
       dataSrc: "",
     },
     columns: [
+      { class: "fecha", data: "fecha" },
       { data: "serie" },
-      { data: "fecha" },
       { data: "hora" },
       { data: "metodo" },
       { data: "descuento" },
@@ -292,7 +292,8 @@ document.addEventListener("DOMContentLoaded", function () {
     dom,
     buttons,
     responsive: true,
-    order: [[4, "desc"]],
+    order: [[1, 'desc']],
+    order: [[0, 'desc']],
   });
 
 });
@@ -549,3 +550,34 @@ function llenartablaVentas(ui) {
   
 }
   
+ //filtro rango de fechas
+ function filtroFechas(){
+    
+  const fechaDesde = new Date(($('#desde').val()));
+  const fechaHasta = new Date(($('#hasta').val()));
+
+  console.log("Fecha desde: ",fechaDesde)
+  $('#tblHistorial tbody tr').each(function() {
+    const fechaTexto = $(this).find('.fecha').text(); // Suponiendo que la fecha esté en una columna con clase 'fecha'
+    const fecha = parseDate(fechaTexto);
+    console.log("Fecha tabla: ", fecha)
+    if (fecha >= fechaDesde && fecha <= fechaHasta) {
+      console.log("valido")
+      $(this).show(); // Mostrar la fila
+    } else {
+      console.log("No valido")
+      $(this).hide(); // Ocultar la fila
+    }
+  });
+
+}
+function parseDate(dateString) {
+  const parts = dateString.split('/');
+  if (parts.length === 3) {
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; // Restamos 1 al mes porque en JavaScript los meses se cuentan desde 0 a 11
+    const year = parseInt(parts[2], 10);
+    return new Date(year + '-' + (month < 9 ? '0' : '') + (month + 1) + '-' + (day < 10 ? '0' : '') + day);
+  }
+  return null; // Devuelve null si la cadena no tiene el formato esperado
+}

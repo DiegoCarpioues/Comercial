@@ -62,7 +62,7 @@ class VentasModel extends Query{
     {
         //$sql = "SELECT v.*, c.nombre FROM ventas v INNER JOIN clientes c ON v.id_cliente = c.id";
 
-        $sql = "SELECT v.id, v.fecha, v.hora, v.metodo, v.descuento, v.serie,
+        $sql = "SELECT v.id, DATE_FORMAT(v.fecha, '%d/%m/%Y') AS fecha, DATE_FORMAT(v.hora, '%h:%i %p') AS hora, v.metodo, v.descuento, v.serie,
             v.estado, cli.nombre,
             ROUND(SUM((((p.ganancia/100) * c.precio) + c.precio) * dtv.cantidad),2) AS total
         FROM detalle_venta dtv

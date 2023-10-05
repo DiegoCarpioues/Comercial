@@ -70,7 +70,7 @@
         <tbody>
             <?php
             $subTotal = 0;
-            
+
             foreach ($data['detalle_venta'] as $detalle) {
                 ?>
                     <tr>
@@ -83,26 +83,31 @@
                 $subTotal += $detalle['total'];
             }
 
-            $igv = $subTotal * 0.13;
-            $total = $subTotal + $igv;
-            $totalCD = $total - $data['venta']['descuento'];
-            $totalSD = $total;
+            $ventSinIva = $subTotal / 1.13;//quitandole el IVA
+            $igv = $ventSinIva * 0.13;//calculando el IVA
+            $total = $ventSinIva + $igv;
+            $totalCD = $total;//ya viene con descuento
+            $totalSD = $data['venta']['total'] + ($data['venta']['total'] * ($data['venta']['descuento']/100));
             ?>
             <tr class="total">
                 <td class="text-right" colspan="3">SubTotal</td>
-                <td class="text-right"><?php echo number_format($subTotal, 2); ?></td>
+                <td class="text-right"><?php echo number_format($ventSinIva, 2); ?></td>
             </tr>
             <tr class="total">
                 <td class="text-right" colspan="3">IVA 13%</td>
                 <td class="text-right"><?php echo number_format($igv, 2); ?></td>
             </tr>
             <tr class="total">
-                <td class="text-right" colspan="3">Total con Descuento</td>
-                <td class="text-right"><?php echo number_format($totalCD, 2); ?></td>
+                <td class="text-right" colspan="3">Descuento %</td>
+                <td class="text-right"><?php echo number_format($data['venta']['descuento'], 2); ?></td>
             </tr>
             <tr class="total">
-                <td class="text-right" colspan="3">Total sin Descuento</td>
+                <td class="text-right" colspan="3">Total sin descuento $</td>
                 <td class="text-right"><?php echo number_format($totalSD, 2); ?></td>
+            </tr>
+            <tr class="total">
+                <td class="text-right" colspan="3">Total con descuento $</td>
+                <td class="text-right"><?php echo number_format($totalCD, 2); ?></td>
             </tr>
         </tbody>
     </table>
