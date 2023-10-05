@@ -16,7 +16,6 @@
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
                 <button class="nav-link active" id="nav-creditos-tab" data-bs-toggle="tab" data-bs-target="#nav-creditos" type="button" role="tab" aria-controls="nav-creditos" aria-selected="true">Creditos</button>
-                <button class="nav-link" id="nav-abonos-tab" data-bs-toggle="tab" data-bs-target="#nav-abonos" type="button" role="tab" aria-controls="nav-abonos" aria-selected="false">Abonos</button>
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
@@ -38,13 +37,15 @@
                         <thead>
                             <tr>
                                 <th>Fecha</th>
-                                <th>Monto</th>
                                 <th>Cliente</th>
-                                <th>Restante</th>
-                                <th>Abonado</th>
                                 <th>N° Venta</th>
+                                <th>Total</th>
+                                <th>Cuo. Totales</th>
+                                <th>Cuo. Pagadas</th>
+                                <th>Abonado</th>
+                                <th>Restante</th>
                                 <th>Estado</th>
-                                <th></th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
 
@@ -54,23 +55,7 @@
 
                 </div>
             </div>
-            <div class="tab-pane fade p-3" id="nav-abonos" role="tabpanel" aria-labelledby="nav-abonos-tab" tabindex="0">
-                
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped table-hover align-middle nowrap" id="tblAbonos" style="width: 100%;">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Monto</th>
-                                <th>N° Credito</th>
-                            </tr>
-                        </thead>
 
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
     </div>
 </div>

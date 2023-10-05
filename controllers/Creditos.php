@@ -28,23 +28,13 @@ class Creditos extends Controller
     {
         $data = $this->model->getCreditos();
         for ($i = 0; $i < count($data); $i++) {
-            $credito = $this->model->getCredito($data[$i]['id']);
-            $result = $this->model->getAbono($data[$i]['id']);
-            $abonado = ($result['total'] == null) ? 0 : $result['total'];
-            $restante = $data[$i]['monto'] - $abonado;
-            if ($restante < 0.1 && $credito['estado'] = 1) {
-                $this->model->actualizarCredito(0, $data[$i]['id']);
-            }
-            $data[$i]['monto'] = number_format($data[$i]['monto'], 2);
-            $data[$i]['abonado'] = number_format($abonado, 2);
-            $data[$i]['restante'] = number_format($restante, 2);
-            $data[$i]['venta'] = 'N°: ' . $data[$i]['id_venta'];
-            $data[$i]['acciones'] = '<a class="btn btn-danger" href="'.BASE_URL.'creditos/reporte/'.$data[$i]['id'].'" target="_blank"><i class="fas fa-file-pdf"></i></a>';
-            if ($data[$i]['estado'] == 1) {
+            $data[$i]['total']="$ ".$data[$i]['total'];
+            $data[$i]['total_abonado']="$ ".$data[$i]['total_abonado'];
+            $data[$i]['total_restante']="$ ".$data[$i]['total_restante'];
+            $data[$i]['acciones'] = '<a class="dropdown-item" href="#" id="nuevoAbono"><i class="fas fa-dollar-sign"></i> Abonos</a>';
+            if ($data[$i]['estado'] == "Activo") {
                 $data[$i]['estado'] = '<span class="badge bg-warning">PENDIENTE</span>';
-            } else if($data[$i]['estado'] == 2){
-                $data[$i]['estado'] = '<span class="badge bg-danger">ANULADO</span>';
-            }else{
+            } else if($data[$i]['estado'] == 'Inactivo'){
                 $data[$i]['estado'] = '<span class="badge bg-success">COMPLETADO</span>';
             }
             

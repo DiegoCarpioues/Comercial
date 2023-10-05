@@ -5,7 +5,29 @@ class CreditosModel extends Query{
     }
     public function getCreditos()
     {
-        $sql = "SELECT cr.*, cl.nombre FROM creditos cr INNER JOIN ventas v ON cr.id_venta = v.id INNER JOIN clientes cl ON v.id_cliente = cl.id";
+        $sql = "SELECT
+        v.fecha,
+        cl.nombre,
+        v.serie as venta,
+        c.total,
+        c.meses_plazo as cuotas_totales,
+        (SELECT COUNT(*) FROM abonos as ab where ab.id_credito=c.id) as cuotas_pagadas,
+        ((SELECT COUNT(*) FROM abonos as ab where ab.id_credito=c.id)* c.cuota + c.prima) as total_abonado,
+        (c.total - ((SELECT COUNT(*) FROM abonos as ab where ab.id_credito=c.id)* c.cuota + c.prima)) as total_restante,
+            CASE
+            WHEN c.estado = 1 THEN 'Activo'
+            WHEN c.estado = 0 THEN 'Inactivo'
+        END as estado
+    FROM
+        ventas as v
+        INNER JOIN
+        clientes as cl
+        ON 
+            v.id_cliente = cl.id
+        INNER JOIN
+        creditos as c
+        ON 
+            v.id = c.id_venta ORDER BY v.fecha ASC";
         return $this->selectAll($sql);
     }
     public function getAbono($idCredito)

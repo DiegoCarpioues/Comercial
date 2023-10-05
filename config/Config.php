@@ -1,5 +1,5 @@
 <?php
-define('BASE_URL', 'http://localhost/comercial/');
+define('BASE_URL', 'http://localhost:8080/comercial/');
 define('HOST', 'localhost');
 define('USER', 'root');
 define('PASS', '');
