@@ -195,10 +195,13 @@ document.addEventListener("DOMContentLoaded", function () {
   btnGuardarVenta.addEventListener("click", function () {
     let filas = document.querySelectorAll("#tblNuevaVenta tr").length;
     if (filas < 2) {
-      alertaPersonalizada("warning", "CARRITO VACIOooo");
+      alertaPersonalizada("warning", "CARRITO VACIO");
       return;
     } else if (metodo.value == "") {
       alertaPersonalizada("warning", "EL METODO ES REQUERIDO");
+      return;
+    }else if (idCliente.value == "") {
+      alertaPersonalizada("warning", "EL CLIENTE ES REQUERIDO");
       return;
     } else {
       const url = base_url + "ventas/registrarVenta";
@@ -229,13 +232,14 @@ document.addEventListener("DOMContentLoaded", function () {
       http.onreadystatechange = function () {
         alert(this.readyState +" -- "+ this.status);
         if (this.readyState == 4 && this.status == 200) {
-          //const res = JSON.parse(this.responseText);
           console.log(this.responseText);
+          const res = JSON.parse(this.responseText);
+          
           alert(this.responseText);
           //console.log(this.responseText);
           //alertaPersonalizada(res.type, res.msg);
-          /* if (res.type == "success") {
-            localStorage.removeItem(nombreKey);//borrar
+          if (res.type == "success") {
+            //localStorage.removeItem(nombreKey);//borrar
             setTimeout(() => {
               Swal.fire({
                 title: "Desea Generar Reporte?",
@@ -244,7 +248,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 confirmButtonText: "Ticked",
                 denyButtonText: `Factura`,
               }).then((result) => {
-                
+
                 if (result.isConfirmed) {
                   const ruta =
                     base_url + "ventas/reporte/ticked/" + res.idVenta;
@@ -259,7 +263,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }, 1500);
               });
             }, 2000);
-          } */
+          }
         }
       };
     }
@@ -411,6 +415,8 @@ $("#buscarProductoNombreVenta, #buscarProductoCodigoVenta").autocomplete({
 function llenartablaVentas(ui) {
     // Agregar productos a listaDeProductos
     listaDeProductos.push({
+      id: ui.item.id,
+      codigo: ui.item.codigo,
       nombre: ui.item.label,
       cantidad: 0, //aquí se llenan los datos de la cantidad
       precio: ui.item.precio,
