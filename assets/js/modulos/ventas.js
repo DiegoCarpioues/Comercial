@@ -134,14 +134,10 @@ document.addEventListener("DOMContentLoaded", function () {
     var sumaTotalVenta = parseFloat(sumaTotalVentaInput.value) || 0;
     var descuentoPorcentaje = parseFloat(descuentoInput.value) || 0;
     var descuento = (descuentoPorcentaje / 100) * sumaTotalVenta;
-    var totalPagar = sumaTotalVenta - descuento;
+    var total = (sumaTotalVenta - descuento);//total con descuento
+    var totalPagar = ((total * 0.13) + total);//total con IVA y descuento
   
-    if(descuentoPorcentaje == 0){
-        totalPagarInput.value = sumaTotalVenta;
-    }else{
-        totalPagarInput.value = totalPagar.toFixed(2);
-    }
-    
+    totalPagarInput.value = totalPagar.toFixed(2); 
   }
 
   function calcularCambio(){
@@ -195,10 +191,13 @@ document.addEventListener("DOMContentLoaded", function () {
   btnGuardarVenta.addEventListener("click", function () {
     let filas = document.querySelectorAll("#tblNuevaVenta tr").length;
     if (filas < 2) {
-      alertaPersonalizada("warning", "CARRITO VACIOooo");
+      alertaPersonalizada("warning", "CARRITO VACIO");
       return;
     } else if (metodo.value == "") {
       alertaPersonalizada("warning", "EL METODO ES REQUERIDO");
+      return;
+    }else if (idCliente.value == "") {
+      alertaPersonalizada("warning", "EL CLIENTE ES REQUERIDO");
       return;
     } else {
       const url = base_url + "ventas/registrarVenta";
@@ -227,15 +226,10 @@ document.addEventListener("DOMContentLoaded", function () {
       
       //verificar estados
       http.onreadystatechange = function () {
-        alert(this.readyState +" -- "+ this.status);
         if (this.readyState == 4 && this.status == 200) {
-          //const res = JSON.parse(this.responseText);
           console.log(this.responseText);
-          alert(this.responseText);
-          //console.log(this.responseText);
-          //alertaPersonalizada(res.type, res.msg);
-          /* if (res.type == "success") {
-            localStorage.removeItem(nombreKey);//borrar
+          const res = JSON.parse(this.responseText);
+          if (res.type == "success") {
             setTimeout(() => {
               Swal.fire({
                 title: "Desea Generar Reporte?",
@@ -244,7 +238,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 confirmButtonText: "Ticked",
                 denyButtonText: `Factura`,
               }).then((result) => {
-                
+
                 if (result.isConfirmed) {
                   const ruta =
                     base_url + "ventas/reporte/ticked/" + res.idVenta;
@@ -259,7 +253,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }, 1500);
               });
             }, 2000);
-          } */
+          }
         }
       };
     }
@@ -272,8 +266,8 @@ document.addEventListener("DOMContentLoaded", function () {
       dataSrc: "",
     },
     columns: [
+      { class: "fecha", data: "fecha" },
       { data: "serie" },
-      { data: "fecha" },
       { data: "hora" },
       { data: "metodo" },
       { data: "descuento" },
@@ -288,7 +282,8 @@ document.addEventListener("DOMContentLoaded", function () {
     dom,
     buttons,
     responsive: true,
-    order: [[4, "desc"]],
+    order: [[1, 'desc']],
+    order: [[0, 'desc']],
   });
 
 });
@@ -402,8 +397,6 @@ $("#buscarProductoNombreVenta, #buscarProductoCodigoVenta").autocomplete({
   select: function (event, ui) {
     llenartablaVentas(ui);
     inputBuscarCodigoVenta.innerHTML = '';
-    /* inputBuscarNombreVenta.innerHTML = ui.item.id;
-    inputBuscarNombreVenta.focus(); */
   },
   
 });
@@ -411,6 +404,8 @@ $("#buscarProductoNombreVenta, #buscarProductoCodigoVenta").autocomplete({
 function llenartablaVentas(ui) {
     // Agregar productos a listaDeProductos
     listaDeProductos.push({
+      id: ui.item.id,
+      codigo: ui.item.codigo,
       nombre: ui.item.label,
       cantidad: 0, //aquí se llenan los datos de la cantidad
       precio: ui.item.precio,
@@ -440,9 +435,7 @@ function llenartablaVentas(ui) {
   
     // Agregar la nueva fila al cuerpo de la tabla
     tablaBody.append(nuevaFila);
-  // Limpia los campos de entrada de código y nombre
-  $("#buscarProductoCodigoVenta").val('');
-  $("#buscarProductoNombreVenta").val('');
+
     // Llama a la función para calcular la suma total inicialmente
     calcularSumaTotalVenta();
   
@@ -490,21 +483,13 @@ function llenartablaVentas(ui) {
       // Muestra la suma total en el campo "Venta Total"
       $("#sumaTotalVenta").val(sumaTotalVenta.toFixed(2)); 
 
-      if($("#descuento").val() <= 0){
-        $("#totalPagar").val(sumaTotalVenta.toFixed(2)); 
-      }else{
-        let sumaTotalVenta = parseFloat($("#sumaTotalVenta").val()) || 0;
-        let descuentoPorcentaje = parseInt($("#descuento").val()) || 0;
-        var descuento = (descuentoPorcentaje / 100) * sumaTotalVenta;
-        var totalPagar = sumaTotalVenta - descuento;
+      var descuentoPorcentaje = parseFloat($("#descuento").val()) || 0;
+      var descuento = (descuentoPorcentaje / 100) * sumaTotalVenta;
+      var total = (sumaTotalVenta - descuento);//total con descuento
+      var totalPagar = ((total * 0.13) + total);//total con IVA y descuento
+  
+      $("#totalPagar").val(totalPagar.toFixed(2));
 
-      
-        if(descuentoPorcentaje == 0){
-            $("#totalPagar").val(sumaTotalVenta.toFixed(2));
-        }else{
-            $("#totalPagar").val(totalPagar.toFixed(2));
-        }
-      }
        //calcular cambio
        const errorPago = document.querySelector("#errorPago");
        let totalAPagar = parseFloat($("#totalPagar").val());
@@ -522,8 +507,6 @@ function llenartablaVentas(ui) {
             $("#cambio").val("ERROR");
         }
        }
-       
-
     }
 
     // Escuchar clics en los botones de eliminar
@@ -543,3 +526,34 @@ function llenartablaVentas(ui) {
   
 }
   
+ //filtro rango de fechas
+ function filtroFechas(){
+    
+  const fechaDesde = new Date(($('#desde').val()));
+  const fechaHasta = new Date(($('#hasta').val()));
+
+  console.log("Fecha desde: ",fechaDesde)
+  $('#tblHistorial tbody tr').each(function() {
+    const fechaTexto = $(this).find('.fecha').text(); // Suponiendo que la fecha esté en una columna con clase 'fecha'
+    const fecha = parseDate(fechaTexto);
+    console.log("Fecha tabla: ", fecha)
+    if (fecha >= fechaDesde && fecha <= fechaHasta) {
+      console.log("valido")
+      $(this).show(); // Mostrar la fila
+    } else {
+      console.log("No valido")
+      $(this).hide(); // Ocultar la fila
+    }
+  });
+
+}
+function parseDate(dateString) {
+  const parts = dateString.split('/');
+  if (parts.length === 3) {
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; // Restamos 1 al mes porque en JavaScript los meses se cuentan desde 0 a 11
+    const year = parseInt(parts[2], 10);
+    return new Date(year + '-' + (month < 9 ? '0' : '') + (month + 1) + '-' + (day < 10 ? '0' : '') + day);
+  }
+  return null; // Devuelve null si la cadena no tiene el formato esperado
+}

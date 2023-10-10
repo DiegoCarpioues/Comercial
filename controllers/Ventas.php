@@ -52,6 +52,7 @@ class Ventas extends Controller
             $result['precio'] = $row['precio'];
             $result['disponibles'] = $row['disponibles'];
             $result['idCompra'] = $row['idCompra'];
+            $result['codigo'] = $row['codigo'];
             array_push($array, $result);
         }
         echo json_encode($array, JSON_UNESCAPED_UNICODE);
@@ -62,41 +63,17 @@ class Ventas extends Controller
     {
         $json = file_get_contents('php://input');
         $datos = json_decode($json, true);
-        $array['productos'] = array();
-        //echo ($datos);
-        echo ($datos['metodo']);
-        echo ($datos['totalAPagar']);
-        echo ($datos['prima']);
-        echo ($datos['interesMensual']);
-        echo ($datos['mesesPlazo']);
-        echo ($datos['cuotaMensual']);
-        echo("** ");
-        echo ($datos['idCliente']);
-        echo(" **");
-        //echo ($datos['estado']);
-        //echo ($datos['productos']);
-
-        foreach ($datos['productos'] as $producto) {
-            /* $data['precio'] = $producto['precio'];
-            $data['cantidad'] = $producto['cantidad']; */
-            echo (" ---");
-            echo ($producto['precio']);
-            echo (" -");
-            echo ($producto['cantidad']);
-        }
-
-        $total = 0;
+        //$array['productos'] = array();
+        
         if (!empty($datos['productos'])) {
             $fecha = date('Y-m-d');
             $hora = date('H:i:s');
             $metodo = $datos['metodo']; 
-            //$estado = $datos['estado']; 
             $totalAPagar = $datos['totalAPagar'];
             $prima = $datos['prima'];
             $interesMensual = $datos['interesMensual'];
             $mesesPlazo = $datos['mesesPlazo'];
-            $cuotaMensual = $datos['cuotaMensual'];
-            //productos: listaDeProductos,            
+            $cuotaMensual = $datos['cuotaMensual'];          
             $resultSerie = $this->model->getSerie();
             $numSerie = ($resultSerie['total'] == null) ? 1 : $resultSerie['total'] + 1;
 
@@ -114,65 +91,52 @@ class Ventas extends Controller
             }else if ((empty($pago) || $pago <= 0) && ($metodo != 'CREDITO')) {
                 $res = array('msg' => 'EL PAGO ES REQUERIDO', 'type' => 'warning');
             } else {
-                /* $verifcarCaja = $this->model->getCaja($this->id_usuario);
-                if (empty($verifcarCaja['monto_inicial'])) {
-                    $res = array('msg' => 'La CAJA ESTA CERRADA', 'type' => 'warning');
-                } else { */
-                    /* foreach ($datos['productos'] as $producto) {
-                        $result = $this->model->getProducto($producto['id']);
-                        $data['id'] = $result['id'];
-                        $data['nombre'] = $result['descripcion'];
-                        $data['precio'] = $producto['precio'];
-                        $data['cantidad'] = $producto['cantidad'];
-                        $subTotal = $producto['precio'] * $producto['cantidad'];
-                        array_push($array['productos'], $data);
-                        $total += $subTotal;
-                    } */
-
-
-                    $datosProductos = json_encode($array['productos']);
-                    //$pago = (!empty($datos['pago'])) ? $datos['pago'] : $total;
 
                     if($metodo != 'CREDITO'){//para el estado
                         $venta = $this->model->registrarVenta($fecha, $hora, $metodo, $descuento, $serie[0], $pago, 1, $idCliente, $this->id_usuario);
                     }else{
                         $venta = $this->model->registrarVenta($fecha, $hora, $metodo, $descuento, $serie[0], 0.00, 0, $idCliente, $this->id_usuario);
                     }
-                    //$venta = 0;
-                    //$venta = $this->model->registrarVenta($datosProductos, $total, $fecha, $hora, $metodo, $descuento, $serie[0], $pago, $idCliente, $this->id_usuario);
+                    
                     if ($venta > 0) {
                         $idVenta = 0;
                         $resultVent = $this->model->ultimaVenta();
                         $s = ($resultVent['id'] == null) ? 1 : $resultVent['id'];
                         $idVenta = $s;
-                        echo("--** ");
-                        echo ($idVenta);
-                        echo(" **--");
 
                         foreach ($datos['productos'] as $producto) {
-                            //$result = $this->model->getProducto($producto['id']);
-                            //actualizar stock
-                            //$nuevaCantidad = $result['cantidad'] - $producto['cantidad'];
-                            //$totalVentas = $result['ventas'] + $producto['cantidad'];
-                            //$this->model->actualizarStock($nuevaCantidad, $totalVentas, $result['id']);
-
-                            //$movimiento = 'Venta N°: ' . $venta;
-
                             $cantidad = $producto['cantidad'];
-                            $idCompra = $producto['idCompra'];
-                            echo("** ");
-                            echo ($idVenta);
-                            echo(" **");
-                            //hacer una consulta para obtener el id de la ultima venta
+                            //$idCompra = $producto['idCompra'];
+                            $codigoProducto = $producto['codigo'];//no existe id dice
                             
-                            $this->model->registraDetalleVenta($idCompra, $idVenta, $cantidad);
-
-                            //modificar el estado de la venta si ya no hay productos disponibles
-                            //ejecutar consulta, el resultado del total disponible - cantidad 
                             /* OBTENGO LA LISTA QUE TRAE EN CADA COMPRA CUANTOS HAY DISPONIBLES SI LA CANTIDAD VENDIDA SUPERA A 
                             LA CANTIDAD DISPONIBLE EN LA COMPRA ENTONCES LA COMPRA CAMBIA DE ESTADO A 0 Y SE PASA A LA SIGUIENTE COMPRA... */
-                            if(false){//Si se acaba el stok en la compra, setear stado = 0
-                                $this->model->actualizarEstadoCompra($idCompra, 0);
+                            $compras = $this->model->obtenerListaCompras($codigoProducto);
+                            $cantAVender = $cantidad;
+                            //print_r($compras);
+                            foreach ($compras as $compra) {
+                                $idCompra = $compra['idCompra'];
+                                if($cantAVender <= $producto['disponibles'] && $cantAVender > 0){
+                                    if($compra['disponibles'] != null && $compra['disponibles'] != "" && $compra['disponibles'] > 0){
+                                        $proDispVen = $compra['disponibles'];//producto disponible para la venta de x compra
+                                        
+                                        if($proDispVen > $cantAVender){
+                                            $this->model->actualizarEstadoCompra($idCompra, 1);
+                                            $this->model->registraDetalleVenta($idCompra, $idVenta, $cantAVender);
+                                            $cantAVender = 0;
+                                            break; //salirse
+                                        }else if($proDispVen == $cantAVender){
+                                            $this->model->actualizarEstadoCompra($idCompra, 0);
+                                            $this->model->registraDetalleVenta($idCompra, $idVenta, $cantAVender);
+                                            $cantAVender = 0;
+                                            break;
+                                        }else if($proDispVen <= $cantAVender){
+                                            $this->model->actualizarEstadoCompra($idCompra, 0);
+                                            $this->model->registraDetalleVenta($idCompra, $idVenta, $proDispVen);
+                                            $cantAVender = $cantAVender - $proDispVen;
+                                        }
+                                    }
+                                }
                             }
                         }
                         if ($metodo == 'CREDITO') {
@@ -200,10 +164,23 @@ class Ventas extends Controller
         $array = explode(',', $datos);
         $tipo = $array[0];
         $idVenta = $array[1];
+        $arrayDetProd = array();
 
         $data['title'] = 'Reporte';
        // $data['empresa'] = $this->model->getEmpresa();
         $data['venta'] = $this->model->getVenta($idVenta);
+        
+        $dat = $this->model->getDetalleVenta($idVenta);
+        foreach ($dat as $row) {
+            $result['cantidad'] = $row['cantidad'];
+            $result['descripcion'] = $row['descripcion'];
+            $result['precio'] = $row['precio'];
+            $result['total'] = $row['total'];
+            array_push($arrayDetProd, $result);
+        }
+
+        $data['detalle_venta'] = $arrayDetProd;
+        
         if (empty($data['venta'])) {
             echo 'Pagina no Encontrada';
             exit;
@@ -234,17 +211,23 @@ class Ventas extends Controller
     {
         $data = $this->model->getVentas();
         for ($i = 0; $i < count($data); $i++) {
-            if ($data[$i]['estado'] != 1) {
-                $data[$i]['acciones'] = '<div>
-                <a class="btn btn-warning" href="#" onclick="anularVenta(' . $data[$i]['id'] . ')"><i class="fas fa-trash"></i></a>
-                <a class="btn btn-danger" href="#" onclick="verReporte(' . $data[$i]['id'] . ')"><i class="fas fa-file-pdf"></i></a>
+            if ($data[$i]['estado'] == 1) {
+                $data[$i]['estado'] = '<div>
+                <span class="badge bg-success">Completado</span>
+                </div>';
+            } else if($data[$i]['estado'] == 0){
+                $data[$i]['estado'] = '<div>
+                <span class="badge bg-info">Pendiente</span>
                 </div>';
             } else {
-                $data[$i]['acciones'] = '<div>
-                <span class="badge bg-info">Anulado</span>
-                <a class="btn btn-danger" href="#" onclick="verReporte(' . $data[$i]['id'] . ')"><i class="fas fa-file-pdf"></i></a>
+                $data[$i]['estado'] = '<div>
+                <span class="badge bg-warning">Apartado</span>
                 </div>';
             }
+
+            $data[$i]['acciones'] = '<div>
+            <a class="btn btn-danger" href="#" onclick="verReporte(' . $data[$i]['id'] . ')"><i class="fas fa-file-pdf"></i></a>
+            </div>';
         }
         echo json_encode($data);
         die();
@@ -398,8 +381,20 @@ class Ventas extends Controller
     // ENVIAR TICKET AL CORREO DEL CLIENTE
     public function enviarCorreo($idVenta)
     {
-        //$data['empresa'] = $this->model->getEmpresa();
+        $arrayDetProd = array();
+
+        $dat = $this->model->getDetalleVenta($idVenta);
+        foreach ($dat as $row) {
+            $result['cantidad'] = $row['cantidad'];
+            $result['descripcion'] = $row['descripcion'];
+            $result['precio'] = $row['precio'];
+            $result['total'] = $row['total'];
+            array_push($arrayDetProd, $result);
+        }
+
+        $data['detalle_venta'] = $arrayDetProd;
         $data['venta'] = $this->model->getVenta($idVenta);
+
         ob_start();
         $data['title'] = 'Reporte';
         $this->views->getView('ventas', 'ticket_cliente', $data);

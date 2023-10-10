@@ -168,21 +168,21 @@
             </div>
             <div class="tab-pane fade p-3" id="nav-historial" role="tabpanel" aria-labelledby="nav-historial-tab" tabindex="0">
                 <div class="d-flex justify-content-center mb-3">
-                    <div class="form-group">
+                <div class="form-group">
                         <label for="desde">Desde</label>
-                        <input id="desde" class="form-control" type="date">
+                        <input type="date" id="desde" onchange="filtroFechas()" class="form-control" >
                     </div>
                     <div class="form-group">
                         <label for="hasta">Hasta</label>
-                        <input id="hasta" class="form-control" type="date">
+                        <input type="date" id="hasta" onchange="filtroFechas()" class="form-control" >
                     </div>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped table-hover align-middle nowrap" id="tblHistorial" style="width: 100%;">
                         <thead>
                             <tr>
-                                <th>Serie</th>
                                 <th>Fecha</th>
+                                <th>Serie</th>
                                 <th>Hora</th>
                                 <th>Metodo</th>
                                 <th>Descuento</th>

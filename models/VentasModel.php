@@ -62,15 +62,15 @@ class VentasModel extends Query{
     {
         //$sql = "SELECT v.*, c.nombre FROM ventas v INNER JOIN clientes c ON v.id_cliente = c.id";
 
-        $sql = "SELECT
-        ventas.id, ventas.fecha, ventas.hora, ventas.metodo, ventas.descuento, 
-        ventas.serie, ventas.estado, clientes.nombre,
-        SUM((productos.ganancia/100) * compras.precio + compras.precio - ventas.descuento) AS total
-        FROM ventas
-        INNER JOIN clientes	ON ventas.id_cliente = clientes.id
-        INNER JOIN detalle_venta ON ventas.id = detalle_venta.id_venta
-        INNER JOIN compras ON  detalle_venta.id_compra = compras.id
-        INNER JOIN productos ON compras.id_productos = productos.id";
+        $sql = "SELECT v.id, DATE_FORMAT(v.fecha, '%d/%m/%Y') AS fecha, DATE_FORMAT(v.hora, '%h:%i %p') AS hora, v.metodo, v.descuento, v.serie,
+            v.estado, cli.nombre,
+            ROUND(SUM((((p.ganancia/100) * c.precio) + c.precio) * dtv.cantidad),2) AS total
+        FROM detalle_venta dtv
+        INNER JOIN ventas AS v ON dtv.id_venta = v.id
+        INNER JOIN clientes AS cli ON v.id_cliente = cli.id
+        INNER JOIN compras AS c ON dtv.id_compra = c.id
+        INNER JOIN productos AS p ON c.id_productos = p.id
+        GROUP BY v.id";
         return $this->selectAll($sql);
     }
 
@@ -121,6 +121,148 @@ class VentasModel extends Query{
         return $this->select($sql);
     }
 
+    public function obtenerListaCompras($valor)//buscar producto disponible para la venta
+    {
+        $sql = " 
+        SELECT
+            c.id AS idCompra,
+            p.producto, 
+            p.codigo, 
+            (cc.comprados - IFNULL(v.vendidos, 0)) AS disponibles, 
+            c.cantidad
+        FROM
+            compras c
+        INNER JOIN
+            productos p
+        ON 
+            c.id_productos = p.id
+        LEFT JOIN
+            (SELECT
+                id,
+                SUM(cantidad) AS comprados
+            FROM
+                compras
+            WHERE
+                estado = 1
+            GROUP BY
+                id) AS cc
+        ON 
+            cc.id = c.id
+        LEFT JOIN
+            (SELECT
+                id_compra,
+                SUM(detv.cantidad) AS vendidos
+            FROM
+                detalle_venta detv
+            INNER JOIN
+                compras c
+            ON 
+                detv.id_compra = c.id
+            WHERE
+                c.estado = 1
+            GROUP BY
+                id_compra) AS v
+        ON 
+            c.id = v.id_compra
+        WHERE
+            p.codigo = '".$valor."'
+        ORDER BY c.id ASC;
+        ";
+        return $this->selectAll($sql);
+    }
+
+    public function getVenta($idVenta)
+    {
+        //$sql = "SELECT v.*, c.num_identidad, c.nombre, c.telefono, c.correo, c.direccion FROM ventas v INNER JOIN clientes c ON v.id_cliente = c.id WHERE v.id = $idVenta";
+        $sql = " SELECT
+            ventas.id,
+            productos.id AS id_producto, 
+            productos.producto,
+            productos.descripcion,
+            ROUND(((productos.ganancia/100) * compras.precio) + compras.precio, 2)AS precio,
+            detalle_venta.cantidad,
+            ROUND(((((productos.ganancia/100) * compras.precio) + compras.precio) * detalle_venta.cantidad),2) AS total,
+            ventas.fecha,
+            ventas.hora,
+            ventas.metodo,
+            ventas.descuento,
+            ventas.serie,
+            ventas.pago,
+            ventas.estado,
+            clientes.id AS id_cliente, 
+            usuarios.id AS id_usuario, 
+            clientes.num_identidad, 
+            clientes.nombre, 
+            clientes.telefono, 
+            clientes.correo, 
+            clientes.direccion,
+            COUNT(ventas.id) AS cantProd
+        FROM
+            detalle_venta
+            INNER JOIN
+            compras
+            ON 
+                detalle_venta.id_compra = compras.id
+            INNER JOIN
+            productos
+            ON 
+                compras.id_productos = productos.id
+            INNER JOIN
+            ventas
+            ON 
+                detalle_venta.id_venta = ventas.id
+            INNER JOIN
+            clientes
+            ON 
+                ventas.id_cliente = clientes.id
+            INNER JOIN
+            usuarios
+            ON 
+                compras.id_usuario = usuarios.id AND
+                ventas.id_usuario = usuarios.id
+            WHERE ventas.id = '".$idVenta."'
+            GROUP BY detalle_venta.id ;
+            ";
+        return $this->select($sql);
+    }
+    public function getDetalleVenta($idVenta)
+    {
+        //$sql = "SELECT v.*, c.num_identidad, c.nombre, c.telefono, c.correo, c.direccion FROM ventas v INNER JOIN clientes c ON v.id_cliente = c.id WHERE v.id = $idVenta";
+        $sql = " SELECT
+        productos.producto,
+        productos.descripcion, 
+        ROUND(((productos.ganancia/100) * compras.precio) + compras.precio, 2)AS precio, 
+        detalle_venta.cantidad,
+        ROUND(((((productos.ganancia/100) * compras.precio) + compras.precio) * detalle_venta.cantidad),2) AS total
+    FROM
+        detalle_venta
+        INNER JOIN
+        compras
+        ON 
+            detalle_venta.id_compra = compras.id
+        INNER JOIN
+        productos
+        ON 
+            compras.id_productos = productos.id
+        INNER JOIN
+        ventas
+        ON 
+            detalle_venta.id_venta = ventas.id
+        INNER JOIN
+        clientes
+        ON 
+            ventas.id_cliente = clientes.id
+        INNER JOIN
+        usuarios
+        ON 
+            compras.id_usuario = usuarios.id AND
+            ventas.id_usuario = usuarios.id
+        WHERE ventas.id = '".$idVenta."'
+        GROUP BY detalle_venta.id ; 
+            ";
+        return $this->selectAll($sql);
+    }
+
 
 
 
@@ -129,11 +271,6 @@ class VentasModel extends Query{
         $sql = "UPDATE productos SET cantidad = ?, ventas=? WHERE id = ?";
         $array = array($cantidad, $ventas, $idProducto);
         return $this->save($sql, $array);
-    }
-    public function getVenta($idVenta)
-    {
-        $sql = "SELECT v.*, c.num_identidad, c.nombre, c.telefono, c.correo, c.direccion FROM ventas v INNER JOIN clientes c ON v.id_cliente = c.id WHERE v.id = $idVenta";
-        return $this->select($sql);
     }
     public function anular($idVenta)
     {
