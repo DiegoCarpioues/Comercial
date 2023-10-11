@@ -168,10 +168,33 @@ document.addEventListener('DOMContentLoaded', function(){
                         });
                         
                         tblCreditos.ajax.reload();
+/*                         setTimeout(() => {
+                            const ruta = base_url + 'creditos/reporte/' + idCredito;
+                            window.open(ruta, '_blank');
+                        }, 2000); */
+
                         setTimeout(() => {
-/*                             const ruta = base_url + 'creditos/reporte/' + idCredito.value;
-                            window.open(ruta, '_blank'); */
-                        }, 2000);
+                            Swal.fire({
+                              title: "Desea Generar Reporte?",
+                              showDenyButton: true,
+                              showCancelButton: true,
+                              confirmButtonText: "Ticked",
+                              denyButtonText: `Factura`,
+                            }).then((result) => {
+              
+                              if (result.isConfirmed) {
+                                const ruta =
+                                  base_url + "creditos/ticked/" + idCredito;
+                                window.open(ruta, "_blank");
+                              } else if (result.isDenied) {
+                                const ruta = base_url + 'creditos/reporte/' + idCredito;
+                                window.open(ruta, '_blank');
+                              }
+                              setTimeout(() => {
+                                enviarComprobante(idCredito);
+                              }, 1500);
+                            });
+                          }, 2000);
                     }
                 }
             }
@@ -229,6 +252,40 @@ document.addEventListener('DOMContentLoaded', function(){
       })
 
 
+      function enviarComprobante(idCredito) {
+        Swal.fire({
+          title: "Enviar ticket de venta al correo?",
+          text: "Asegurece de que existe el correo!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Si, enviar!",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            const url = base_url + "creditos/enviarCorreo/" + idCredito;
+            //hacer una instancia del objetosXMLHttpRequest
+            const http = new XMLHttpRequest();
+            //Abrir una Conexion - POST - GET
+            http.open("GET", url, true);
+            //Enviar Datos
+            http.send();
+            //verificar estados
+            http.onreadystatechange = function () {
+              if (this.readyState == 4 && this.status == 200) {
+                console.log("Respuesta: ", this.responseText)
+                const res = JSON.parse(this.responseText);
+                alertaPersonalizada(res.type, res.msg);
+                setTimeout(() => {
+                  window.location.reload();
+                }, 2000);
+              }
+            };
+          } else {
+            window.location.reload();
+          }
+        });
+      }
 
 
 /*     $.fn.dataTable.ext.search.push(

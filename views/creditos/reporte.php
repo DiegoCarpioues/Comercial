@@ -25,9 +25,10 @@
             <td class="info-compra">
                 <div class="container-factura">
                     <span class="factura">Credito</span>
-                    <p>N°: <strong><?php echo $data['credito']['id']; ?></strong></p>
-                    <p>Fecha: <?php echo $data['credito']['fecha']; ?></p>
-                    <p>Hora: <?php echo $data['credito']['hora']; ?></p>
+                    <?php date_default_timezone_set('America/El_Salvador');?>
+                    <p>N°: <strong><?php echo $data['credito']['id_credito']; ?></strong></p>
+                    <p>Fecha: <?php echo date('d/m/Y'); ?></p>
+                    <p>Hora: <?php echo date('H:i:s'); ?></p>
                 </div>
             </td>
         </tr>
@@ -57,33 +58,32 @@
             </td>
         </tr>
     </table>
+
     <h5 class="title">Detalle de los Productos</h5>
     <table id="container-producto">
         <thead>
             <tr>
-                <th>Cant</th>
                 <th>Descripción</th>
-                <th>Precio</th>
-                <th>SubTotal</th>
+                <th>Cantidad</th>
             </tr>
         </thead>
         <tbody>
             <?php
-            $productos = json_decode($data['credito']['productos'], true);
+            $subTotal = 0;
 
-            foreach ($productos as $producto) { ?>
-                <tr>
-                    <td><?php echo $producto['cantidad']; ?></td>
-                    <td><?php echo $producto['nombre']; ?></td>
-                    <td><?php echo number_format($producto['precio'], 2); ?></td>
-                    <td><?php echo number_format($producto['cantidad'] * $producto['precio'], 2); ?></td>
-                </tr>
-            <?php } ?>
-            <tr class="total">
-                <td class="text-right" colspan="3">Monto</td>
-                <td class="text-right"><?php echo number_format($data['credito']['monto'], 2); ?></td>
-            </tr>
+            foreach ($data['productos'] as $producto) {
+                ?>
+                    <tr>
+                        <td class="text-center"><?php echo $producto['descripcion']; ?></td>
+                        <td class="text-center"><?php echo $producto['cantidad']; ?></td>
+                    </tr>
+                <?php
+
+            }
+            ?>
+           
         </tbody>
+
     </table>
 
     <h5 class="title">Detalle de los Abonos</h5>
@@ -91,7 +91,11 @@
         <thead>
             <tr>
                 <th>Fecha</th>
+                <th>Num Cuota</th>
+                <th>Cuota</th>
+                <th>Mora</th>
                 <th>Abono</th>
+                <th>Cambio</th>
             </tr>
         </thead>
         <tbody>
@@ -101,24 +105,36 @@
                 $abonado += $abono['abono'];
                 ?>
                 <tr>
-                    <td class="text-center"><?php echo $abono['fecha']; ?></td>
+                <td class="text-center"><?php echo date('d/m/Y', strtotime($abono['fecha'])); ?></td>
+                    <td class="text-center"><?php echo number_format($abono['numero']); ?></td>
+                    <td class="text-center"><?php echo number_format($data['credito']['cuota'],2); ?></td>
+                    <td class="text-center"><?php echo number_format($abono['mora_calculada'],2); ?></td>
                     <td class="text-center"><?php echo number_format($abono['abono'], 2); ?></td>
+                    <td class="text-center"><?php echo number_format($abono['abono'] -$data['credito']['cuota'], 2); ?></td>
                 </tr>
             <?php } ?>
             <tr class="total">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
                 <td class="text-right">Abonado</td>
-                <td class="text-right"><?php echo number_format($abonado, 2); ?></td>
+                <td class="text-right"><?php echo number_format($data['credito']['total_abonado'], 2); ?></td>
             </tr>
             <tr class="total">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
                 <td class="text-right">Restante</td>
-                <td class="text-right"><?php echo number_format($data['credito']['monto'] -  $abonado, 2); ?></td>
+                <td class="text-right"><?php echo number_format($data['credito']['total_restante'],2); ?></td>
             </tr>
         </tbody>
     </table>
 
 
     <div class="mensaje">
-        <?php if ($data['credito']['estado'] == 0) { ?>
+        <?php if ($data['credito']['estado'] == "Inactivo") { ?>
             <h1>CREDITO FINALIZADO</h1>
         <?php } else { ?>
             <h1>CREDITO PENDIENTE</h1>

@@ -29,9 +29,10 @@ class Productos extends Controller
         $data['categorias'] = $this->model->getDatos('categorias');
         $this->views->getView('productos', 'index', $data);
     }
-    public function listar()
+    public function listar($estado)
     {
-        $data = $this->model->getProductos(1);
+        
+        $data = $this->model->getProductos($estado);
         for ($i = 0; $i < count($data); $i++) {
             $foto = ($data[$i]['foto'] == null) ? 'assets/images/productos/default.png' :  $data[$i]['foto'];
             $data[$i]['imagen'] = '<img class="img-thumbnail" src="' . BASE_URL . $foto . '" width="50">';
@@ -40,9 +41,13 @@ class Productos extends Controller
             <button class="btn btn-info" type="button" onclick="editarProducto(' . $data[$i]['id'] . ')"><i class="fas fa-edit"></i></button>
             </div>';
         }
+    
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
         die();
     }
+
+ 
+
     public function registrar()
     {
         if (isset($_POST['codigo']) && isset($_POST['producto'])) {

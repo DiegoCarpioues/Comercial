@@ -1,6 +1,8 @@
 <?php
 require 'vendor/autoload.php';
 use Dompdf\Dompdf;
+use PHPMailer\PHPMailer\PHPMailer;
+
 class Creditos extends Controller
 {
     private $id_usuario;
@@ -100,6 +102,7 @@ class Creditos extends Controller
        // $data['empresa'] = $this->model->getEmpresa();
         $data['credito'] = $this->model->getCredito($idCredito);
         $data['abonos'] = $this->model->getAbonos($idCredito);
+        $data['productos'] = $this->model->getProductos($data['credito']['id_venta']);
         if (empty($data['credito'])) {
             echo 'Pagina no Encontrada';
             exit;
@@ -121,6 +124,115 @@ class Creditos extends Controller
         // Output the generated PDF to Browser
         $dompdf->stream('reporte.pdf', array('Attachment' => false));
     }
+
+
+    //
+
+    public function ticked($idCredito)
+    {
+        ob_start();
+        $data['title'] = 'Reporte';
+       // $data['empresa'] = $this->model->getEmpresa();
+        $data['credito'] = $this->model->getCredito($idCredito);
+        $data['abonos'] = $this->model->getAbonos($idCredito);
+        $data['productos'] = $this->model->getProductos($data['credito']['id_venta']);
+        if (empty($data['credito'])) {
+            echo 'Pagina no Encontrada';
+            exit;
+        }
+        $this->views->getView('creditos', 'ticked', $data);
+        $html = ob_get_clean();
+        $dompdf = new Dompdf();
+        $options = $dompdf->getOptions();
+        $options->set('isJavascriptEnabled', true);
+        $options->set('isRemoteEnabled', true);
+        $dompdf->setOptions($options);
+        $dompdf->loadHtml($html);
+
+        //$dompdf->setPaper('A4', 'vertical');
+        $dompdf->setPaper(array(0, 0, 130, 841), 'portrait');
+
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        // Output the generated PDF to Browser
+        $dompdf->stream('reporte.pdf', array('Attachment' => false));
+    }
+
+
+        // ENVIAR TICKET AL CORREO DEL CLIENTE
+        public function enviarCorreo($idCredito)
+        {
+/*             $arrayDetProd = array();
+    
+            $dat = $this->model->getDetalleVenta($idVenta);
+            foreach ($dat as $row) {
+                $result['cantidad'] = $row['cantidad'];
+                $result['descripcion'] = $row['descripcion'];
+                $result['precio'] = $row['precio'];
+                $result['total'] = $row['total'];
+                array_push($arrayDetProd, $result);
+            }
+    
+            $data['detalle_venta'] = $arrayDetProd;
+            $data['venta'] = $this->model->getVenta($idVenta);
+    
+            ob_start();
+            $data['title'] = 'Reporte';
+            $this->views->getView('ventas', 'ticket_cliente', $data);
+            $html = ob_get_clean(); */
+            ob_start();
+            $data['title'] = 'Reporte';
+           // $data['empresa'] = $this->model->getEmpresa();
+            $data['credito'] = $this->model->getCredito($idCredito);
+            $data['abonos'] = $this->model->getAbonos($idCredito);
+            $data['productos'] = $this->model->getProductos($data['credito']['id_venta']);
+            if (empty($data['credito'])) {
+                echo 'Pagina no Encontrada';
+                exit;
+            }
+            $this->views->getView('creditos', 'ticked_cliente', $data);
+            $html = ob_get_clean();
+            
+            if (!empty($data)) {
+                $mail = new PHPMailer(true);
+                try {
+                    //Server settings
+                    //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+                    $mail->SMTPDebug = 0;                      //Enable verbose debug output
+                    $mail->isSMTP();                                            //Send using SMTP
+                    $mail->Host       = HOST_SMTP;                     //Set the SMTP server to send through
+                    $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+                    $mail->Username   = USER_SMTP;                     //SMTP username
+                    $mail->Password   = CLAVE_SMTP;                               //SMTP password
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
+                    $mail->Port       = PUERTO_SMTP;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+    
+                    //Recipients
+                   // $mail->setFrom($data['empresa']['correo'], $data['empresa']['nombre']);
+                    $mail->addAddress('20carpioronaldo@gmail.com');
+    
+                    //Content
+                    $mail->isHTML(true);
+                    $mail->CharSet = 'UTF-8';                                  //Set email format to HTML
+                    $mail->Subject = 'Comprobante - ' . TITLE;
+                    $mail->Body    = $html;
+    
+                    $mail->send();
+    
+                    $res = array('msg' => 'CORREO ENVIADO CON LOS DATOS DE ABONO', 'type' => 'success');
+    
+                    
+                } catch (Exception $e) {
+                    $res = array('msg' => 'ERROR AL ENVIAR EL CORREO: ' . $mail->ErrorInfo, 'type' => 'error');
+                }
+            }else{
+                $res = array('msg' => 'VENTA NO ENCONTRADA', 'type' => 'warning');
+            }
+            echo json_encode($res, JSON_UNESCAPED_UNICODE);
+            die();
+        }
+    
 
     public function listarAbonos()
     {
