@@ -28,10 +28,15 @@ class Creditos extends Controller
     {
         $data = $this->model->getCreditos();
         for ($i = 0; $i < count($data); $i++) {
+            $data_json = json_encode($data[$i], JSON_UNESCAPED_UNICODE);
             $data[$i]['total']="$ ".$data[$i]['total'];
             $data[$i]['total_abonado']="$ ".$data[$i]['total_abonado'];
             $data[$i]['total_restante']="$ ".$data[$i]['total_restante'];
-            $data[$i]['acciones'] = '<a class="dropdown-item" href="#" id="nuevoAbono"><i class="fas fa-dollar-sign"></i> Abonos</a>';
+            if($data[$i]['estado'] == "Activo"){
+                $data[$i]['acciones'] = '<a class="dropdown-item" href="#" id="nuevoAbono" onclick="mostrarModal(' . htmlspecialchars($data_json, ENT_QUOTES, 'UTF-8') . ')"><i class="fas fa-dollar-sign"></i> Abonos</a>';
+            }else{
+                $data[$i]['acciones'] ='';
+            }
             if ($data[$i]['estado'] == "Activo") {
                 $data[$i]['estado'] = '<span class="badge bg-warning">PENDIENTE</span>';
             } else if($data[$i]['estado'] == 'Inactivo'){
@@ -43,25 +48,21 @@ class Creditos extends Controller
         die();
     }
 
-    public function buscar()
+    public function finalizar()
     {
         $array = array();
-        $valor = strClean($_GET['term']);
-        $data = $this->model->buscarPorNombre($valor);
-        foreach ($data as $row) {
-            $resultAbono = $this->model->getAbono($row['id']);
-            $abonado = ($resultAbono['total'] == null) ? 0 : $resultAbono['total'];
-            //calcular restante  (monto - abono)
-            $restante = $row['monto'] - $abonado;
-            $result['monto'] = $row['monto'];
-            $result['abonado'] = number_format($abonado, 2, '.', '');
-            $result['restante'] = number_format($restante, 2, '.', '');
-            $result['fecha'] = $row['fecha'];
-            $result['id'] = $row['id'];
-            $result['label'] = $row['nombre'];
-            $result['telefono'] = $row['telefono'];
-            $result['direccion'] = $row['direccion'];
-            array_push($array, $result);
+        $id_credito = strClean($_GET['id_credito']);
+        $id_venta = strClean($_GET['id_venta']);
+        $data = $this->model->VerificarCreditoFinalizado($id_credito);
+    
+        if (!empty($data)) {
+            $valor_credito= $this->model->finalizaCredito(0,$id_credito);
+            $valor_venta= $this->model->finalizaVenta(1,$id_venta);
+            if($valor_credito>0){;
+                if($valor_venta){
+                    array_push($array, true);
+                }
+            }
         }
         echo json_encode($array, JSON_UNESCAPED_UNICODE);
         die();
@@ -72,9 +73,14 @@ class Creditos extends Controller
         $json = file_get_contents('php://input');
         $datos = json_decode($json, true);
         if (!empty($datos)) {
-            $idCredito = strClean($datos['idCredito']);
-            $monto = strClean($datos['monto_abonar']);
-            $data = $this->model->registrarAbono($monto, $idCredito, $this->id_usuario);
+            $numero = $datos['numero'];
+            $abono = $datos['abono'];
+            $fecha = $datos['fecha'];
+            $apertura = $datos['apertura'];
+            $mora = $datos['mora'];
+            $idCredito =$datos['idCredito'];
+            
+            $data = $this->model->registrarAbono($numero,$abono,$fecha,$mora,$apertura, $idCredito);
             if ($data > 0) {
                 $res = array('msg' => 'ABONO REGISTRADO', 'type' => 'success');
             }else{

@@ -6,28 +6,33 @@ class CreditosModel extends Query{
     public function getCreditos()
     {
         $sql = "SELECT
+        c.id as id_credito,
+		v.id as id_venta,
         v.fecha,
         cl.nombre,
+        cl.telefono,
+        cl.direccion,
         v.serie as venta,
         c.total,
+        c.cuota,
         c.meses_plazo as cuotas_totales,
         (SELECT COUNT(*) FROM abonos as ab where ab.id_credito=c.id) as cuotas_pagadas,
         ((SELECT COUNT(*) FROM abonos as ab where ab.id_credito=c.id)* c.cuota + c.prima) as total_abonado,
         (c.total - ((SELECT COUNT(*) FROM abonos as ab where ab.id_credito=c.id)* c.cuota + c.prima)) as total_restante,
-            CASE
-            WHEN c.estado = 1 THEN 'Activo'
-            WHEN c.estado = 0 THEN 'Inactivo'
-        END as estado
-    FROM
-        ventas as v
-        INNER JOIN
-        clientes as cl
-        ON 
-            v.id_cliente = cl.id
-        INNER JOIN
-        creditos as c
-        ON 
-            v.id = c.id_venta ORDER BY v.fecha ASC";
+    CASE
+    WHEN c.estado = 1 THEN 'Activo'
+    WHEN c.estado = 0 THEN 'Inactivo'
+END as estado
+FROM
+ventas as v
+INNER JOIN
+clientes as cl
+ON 
+    v.id_cliente = cl.id
+INNER JOIN
+creditos as c
+ON 
+    v.id = c.id_venta ORDER BY v.fecha ASC";
         return $this->selectAll($sql);
     }
     public function getAbono($idCredito)
@@ -36,16 +41,30 @@ class CreditosModel extends Query{
         return $this->select($sql);
     }
 
-    public function buscarPorNombre($valor)
+    public function VerificarCreditoFinalizado($id)
     {
-        $sql = "SELECT cr.*, cl.nombre, cl.telefono, cl.direccion FROM creditos cr INNER JOIN ventas v ON cr.id_venta = v.id INNER JOIN clientes cl ON v.id_cliente = cl.id WHERE cl.nombre LIKE '%".$valor."%' AND cr.estado = 1 LIMIT 10";
+        $sql = "SELECT * FROM creditos as c INNER JOIN abonos as a ON c.id = a.id_credito WHERE a.numero=c.meses_plazo AND c.id='".$id."' ";
         return $this->selectAll($sql);
     }
 
-    public function registrarAbono($monto, $idCredito, $id_usuario)
+    public function finalizaCredito($estado, $idCredito)
     {
-        $sql = "INSERT INTO abonos (abono, id_credito, id_usuario) VALUES (?,?,?)";
-        $array = array($monto, $idCredito, $id_usuario);
+        $sql = "UPDATE creditos SET estado = ? WHERE id = ?";
+        $array = array($estado, $idCredito);
+        return $this->save($sql, $array);
+    }
+
+    public function finalizaVenta($estado, $idVenta)
+    {
+        $sql = "UPDATE ventas SET estado = ? WHERE id = ?";
+        $array = array($estado, $idVenta);
+        return $this->save($sql, $array);
+    }
+
+    public function registrarAbono($numero, $abono,$fecha,$mora,$apertura, $id_credito)
+    {
+        $sql = "INSERT INTO abonos (numero, abono, fecha, mora, apertura,id_credito) VALUES (?,?,?,?,?,?)";
+        $array = array($numero, $abono,$fecha, $mora,$apertura, $id_credito);
         return $this->insertar($sql, $array);
     }
     public function getCredito($idCredito)

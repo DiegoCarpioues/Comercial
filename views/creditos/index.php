@@ -8,7 +8,7 @@
                 <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown"><i class='bx bx-dots-horizontal-rounded font-22 text-option'></i>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#" id="nuevoAbono"><i class="fas fa-dollar-sign"></i> Abonos</a>
+                    <!-- <li><a class="dropdown-item" href="#" id="nuevoAbono"><i class="fas fa-dollar-sign"></i> Abonos</a> -->
                     </li>
                 </ul>
             </div>
@@ -70,14 +70,12 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-12">
-                        <label>Buscar Cliente</label>
+                <div class="col-md-12">
+                        <label>Cliente</label>
                         <div class="input-group mb-2">
-                            <input type="hidden" id="idCredito">
-                            <span class="input-group-text"><i class="fas fa-search"></i></span>
-                            <input class="form-control" type="text" id="buscarCliente" placeholder="Buscar Cliente">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            <input class="form-control" type="text" id="Cliente" placeholder="Telefono" disabled>
                         </div>
-                        <span class="text-danger fw-bold" id="errorCliente"></span>
                     </div>
                     <div class="col-md-12">
                         <label>Telefono</label>
@@ -109,22 +107,45 @@
                     <div class="col-md-4 mb-2">
                         <div class="form-group">
                             <label for="fecha">Fecha Venta</label>
-                            <input id="fecha" class="form-control" type="text" placeholder="Fecha Venta" readonly>
+                            <input type="date" id="fecha" class="form-control" placeholder="Fecha Venta" readonly>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mb-2">
+                        <div class="form-group">
+                            <label for="cuota">Cuota</label>
+                            <input id="cuota" class="form-control" type="text" placeholder="Monto Total" readonly>
                         </div>
                     </div>
                     <div class="col-md-4 mb-2">
                         <div class="form-group">
-                            <label for="monto_total">Monto Total</label>
-                            <input id="monto_total" class="form-control" type="text" placeholder="Monto Total" readonly>
+                            <label for="mora">Mora</label>
+                            <input id="mora" class="form-control" type="text" placeholder="Monto Total" readonly>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mb-2">
+                        <div class="form-group">
+                            <label for="abono_total">Total Abono</label>
+                            <input id="abono_total" class="form-control" type="text" placeholder="Monto Total" readonly>
                         </div>
                     </div>
                     <div class="col-md-4 mb-2">
                         <div class="form-group">
                             <label for="monto_abonar">Abonar</label>
                             <input id="monto_abonar" class="form-control" type="number" step="0.01" min="0.01" placeholder="Monto Abonar">
+                            
                         </div>
                     </div>
-                </div>
+
+                    <div class="col-md-4 mb-2">
+                        <div class="form-group">
+                            <label for="monto_abonar">Cambio</label>
+                            <input id="cambio_abonar" class="form-control" type="number"  placeholder="Monto Abonar" disabled>
+                        </div>
+                    </div>
+                    <span class="text-danger fw-bold mb-2" id="errorPago"></span>
+                    </div>
                 <div class="d-grid">
                     <button class="btn btn-primary" type="button" id="btnAccion">Abonar</button>
                 </div>
