@@ -18,12 +18,13 @@ const errorNombre = document.querySelector('#errorNombre');
 const errorCompra = document.querySelector('#errorCompra');
 const errorVenta = document.querySelector('#errorVenta');
 const errorCategoria = document.querySelector('#errorCategoria');
+const filtro = document.querySelector('#filtro');
 
 document.addEventListener('DOMContentLoaded', function () {
     //cargar datos con el plugin datatables
-    tblProductos=$('#tblProductos').DataTable({
+   tblProductos=$('#tblProductos').DataTable({
         ajax: {
-            url: base_url + 'productos/listar',
+            url: base_url + 'productos/listar/'+true,
             dataSrc: ''
         },
         columns: [
@@ -45,6 +46,52 @@ document.addEventListener('DOMContentLoaded', function () {
         responsive: true,
         order: [[0, 'asc']],
     });
+
+  
+
+    //Filtro de estados de quipo
+
+    filtro.addEventListener('change', function (e) {
+        
+        console.log("Estado: ", filtro.value)
+
+        if(filtro.value=="Activo"){
+            tabla(true);
+        }else if(filtro.value=="Inactivo"){
+            tabla(false);
+        }
+    })
+
+
+    function tabla($estado){
+        tblProductos.destroy();
+        tblProductos=$('#tblProductos').DataTable({
+            ajax: {
+                url: base_url + 'productos/listar/'+$estado,
+                dataSrc: ''
+            },
+            columns: [
+                { data: 'codigo' },
+                { data: 'producto' },
+                { data: 'marca' },
+                { data: 'modelo' },
+                { data: 'ganancia' },
+                { data: 'categoria' },
+                { data: 'descripcion' },
+                { data: 'imagen' },
+                { data: 'acciones' }
+            ],
+            language: {
+                url: base_url + 'assets/js/espanol.json'
+            },
+            dom,
+            buttons,
+            responsive: true,
+            order: [[0, 'asc']],
+        });
+    
+    }
+
     //vista Previa
     foto.addEventListener('change', function (e) {
         foto_actual.value = '';
@@ -104,6 +151,12 @@ function eliminarProducto(idProducto) {
     const url = base_url + 'productos/eliminar/' + idProducto;
     eliminarRegistros(url, tblProductos);
 
+    
+}
+// Sirve para reactivar el producto
+function activarProducto(idProducto) {
+    const url = base_url + 'productos/activar/' + idProducto;
+    activarRegistros(url, tblProductos);
     
 }
 

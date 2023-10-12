@@ -1,13 +1,19 @@
-
-const inputBuscarCodigo = document.querySelector('#buscarProductoCodigo');
-const inputBuscarNombre = document.querySelector('#buscarProductoNombre');
+let tblHistorial;
+const inputBuscarCodigoCompras = document.querySelector('#buscarProductoCodigoCompras');
+const inputBuscarNombreCompras = document.querySelector('#buscarProductoNombreCompras');
 const tblNuevaCompra = document.querySelector('#tblNuevaCompra tbody');
+
+const barcodeCompras = document.querySelector('#barcodeCompras');
+const nombreCompras = document.querySelector('#nombreCompras');
+
+const containerCodigoCompras = document.querySelector('#containerCodigoCompras');
+const containerNombreCompras = document.querySelector('#containerNombreCompras');
 
 var listaDeProductos = [];
 
-var inputCantidadElements = document.querySelectorAll('.inputCantidad');
+/* var inputCantidadElements = document.querySelectorAll('.inputCantidad');
 var inputPrecioElements = document.querySelectorAll('.inputPrecio');
-const btnAccion = document.querySelector('#btnAccion');
+const btnAccionCompras = document.querySelector('#btnAccionCompras'); */
 
 const serie = document.querySelector('#serie');
 //provedores
@@ -16,7 +22,7 @@ const direccionProveedor = document.querySelector('#proveedorDireccion');
 const idProveedor = document.querySelector('#idProveedor');
 const errorProveedor = document.querySelector('#errorProveedor');
 
-let tblHistorial;
+
 
 
 
@@ -83,12 +89,25 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       dom,
       buttons,
-      responsive: true,
-      order: [[1, 'desc']],
-      order: [[0, 'desc']],
+      responsive: true
   });
 
- 
+  nombreCompras.addEventListener('click', function () {
+    containerCodigoCompras.classList.add('d-none');
+    containerNombreCompras.classList.remove('d-none');
+    inputBuscarNombreCompras.value = '';
+    errorBusqueda.textContent = '';
+    inputBuscarNombreCompras.focus();
+})
+//mostrar input para la busqueda por codigo
+barcodeCompras.addEventListener('click', function () {
+    containerNombreCompras.classList.add('d-none');
+    containerCodigoCompras.classList.remove('d-none');
+    inputBuscarCodigoCompras.value = '';
+    errorBusqueda.textContent = '';
+    inputBuscarCodigoCompras.focus();
+})
+
 
 
 
@@ -121,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     //autocomplete productos por nombre
-    $("#buscarProductoNombre").autocomplete({
+    $("#buscarProductoNombreCompras").autocomplete({
         source: function (request, response) {
             $.ajax({
                 url: base_url + 'productos/buscarPorNombre',
@@ -145,13 +164,13 @@ document.addEventListener('DOMContentLoaded', function () {
             // Agregar productos a listaDeProductos
             listaDeProductos.push({id:ui.item.id,nombre: ui.item.label, cantidad: 0, precio: 0, subtotal: 0 });
             llenartablaCompras(listaDeProductos);
-            inputBuscarNombre.innerHTML=ui.item.id;
-            inputBuscarNombre.focus(); 
+            inputBuscarNombreCompras.innerHTML=ui.item.id;
+            inputBuscarNombreCompras.focus(); 
         } 
     });
 
   //autocomplete productos por codigo
-    $("#buscarProductoCodigo").autocomplete({
+    $("#buscarProductoCodigoCompras").autocomplete({
         source: function (request, response) {
             $.ajax({
                 url: base_url + 'productos/buscarPorCodigo',
@@ -173,8 +192,8 @@ document.addEventListener('DOMContentLoaded', function () {
         select: function (event, ui) {
             listaDeProductos.push({id:ui.item.id,nombre: ui.item.producto, cantidad: 0, precio: 0, subtotal: 0 });
             llenartablaCompras(listaDeProductos);
-            inputBuscarCodigo.innerHTML=ui.item.id;
-            inputBuscarCodigo.focus();
+            inputBuscarCodigoCompras.innerHTML=ui.item.id;
+            inputBuscarCodigoCompras.focus();
          
         } 
       });
@@ -182,9 +201,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     //cargar datos
-    mostrarProducto();
+    //mostrarProducto();
 
-    //completar compra
+    //registrar compra
     btnAccion.addEventListener('click', function () {
         let filas = document.querySelectorAll('#tblNuevaCompra tr').length;
         if (filas < 0) {
@@ -235,11 +254,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
 })
 
- function anularCompra(index){
+/*  function anularCompra(index){
     const url = base_url + 'compras/anular/' + index;
     eliminarRegistros(url, tblHistorial);
  }
-
+ */
 
   
 
@@ -292,16 +311,13 @@ function filtroFechas(){
     const fechaDesde = new Date(($('#desde').val()));
     const fechaHasta = new Date(($('#hasta').val()));
 
-    console.log("Fecha desde: ",fechaDesde)
+
     $('#tblHistorial tbody tr').each(function() {
       const fechaTexto = $(this).find('.fecha').text(); // Suponiendo que la fecha esté en una columna con clase 'fecha'
       const fecha = parseDate(fechaTexto);
-      console.log("Fecha tabla: ", fecha)
       if (fecha >= fechaDesde && fecha <= fechaHasta) {
-        console.log("valido")
         $(this).show(); // Mostrar la fila
       } else {
-        console.log("No valido")
         $(this).hide(); // Ocultar la fila
       }
     });
