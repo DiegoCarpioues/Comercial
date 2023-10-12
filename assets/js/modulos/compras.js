@@ -89,9 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       dom,
       buttons,
-      responsive: true,
-      order: [[1, 'desc']],
-      order: [[0, 'desc']],
+      responsive: true
   });
 
   nombreCompras.addEventListener('click', function () {
@@ -313,11 +311,11 @@ function filtroFechas(){
     const fechaDesde = new Date(($('#desde').val()));
     const fechaHasta = new Date(($('#hasta').val()));
 
+
     $('#tblHistorial tbody tr').each(function() {
       const fechaTexto = $(this).find('.fecha').text(); // Suponiendo que la fecha esté en una columna con clase 'fecha'
       const fecha = parseDate(fechaTexto);
       if (fecha >= fechaDesde && fecha <= fechaHasta) {
-        console.log("valido")
         $(this).show(); // Mostrar la fila
       } else {
         $(this).hide(); // Ocultar la fila

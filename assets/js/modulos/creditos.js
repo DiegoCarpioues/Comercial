@@ -168,11 +168,6 @@ document.addEventListener('DOMContentLoaded', function(){
                         });
                         
                         tblCreditos.ajax.reload();
-/*                         setTimeout(() => {
-                            const ruta = base_url + 'creditos/reporte/' + idCredito;
-                            window.open(ruta, '_blank');
-                        }, 2000); */
-
                         setTimeout(() => {
                             Swal.fire({
                               title: "Desea Generar Reporte?",
@@ -273,7 +268,6 @@ document.addEventListener('DOMContentLoaded', function(){
             //verificar estados
             http.onreadystatechange = function () {
               if (this.readyState == 4 && this.status == 200) {
-                console.log("Respuesta: ", this.responseText)
                 const res = JSON.parse(this.responseText);
                 alertaPersonalizada(res.type, res.msg);
                 setTimeout(() => {
@@ -350,13 +344,12 @@ document.addEventListener('DOMContentLoaded', function(){
 
 }
 
-
+//Filtro de fechas
 function filtroFechas(){
     
     const fechaDesde = new Date(($('#desde').val()));
     const fechaHasta = new Date(($('#hasta').val()));
 
-    console.log("Fecha desde: ",fechaDesde)
     $('#tblCreditos tbody tr').each(function() {
       const fechaTexto = $(this).find('.fecha').text(); // Suponiendo que la fecha esté en una columna con clase 'fecha'
       const fecha = parseDate(fechaTexto);
