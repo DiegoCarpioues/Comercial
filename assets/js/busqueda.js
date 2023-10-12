@@ -1,12 +1,21 @@
-
-
+const inputBuscarCodigo = document.querySelector('#buscarProductoCodigo');
+const inputBuscarNombre = document.querySelector('#buscarProductoNombre');
 const barcode = document.querySelector('#barcode');
 const nombre = document.querySelector('#nombre');
 const containerCodigo = document.querySelector('#containerCodigo');
 const containerNombre = document.querySelector('#containerNombre');
 
 const errorBusqueda = document.querySelector('#errorBusqueda');
- 
+
+const btnAccion = document.querySelector('#btnAccion');
+const totalPagar = document.querySelector('#totalPagar');
+
+//para filtro por rango de fechas
+const desde = document.querySelector('#desde');
+const hasta = document.querySelector('#hasta');
+
+let listaCarrito;
+
 document.addEventListener('DOMContentLoaded', function () {
     //comprobar productos en localStorage
     if (localStorage.getItem(nombreKey) != null) {
@@ -29,13 +38,53 @@ document.addEventListener('DOMContentLoaded', function () {
         inputBuscarCodigo.focus();
     })
 
-/*   inputBuscarCodigo.addEventListener('keyup', function (e) {
+
+  
+
+    inputBuscarCodigo.addEventListener('keyup', function (e) {
         if (e.keyCode === 13) {
             buscarProducto(e.target.value);
         }
         return;
-    })  */
-   
+    })
+    //autocomplete productos
+    $("#buscarProductoNombre").autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: base_url + 'productos/buscarPorNombre',
+                dataType: "json",
+                data: {
+                    term: request.term
+                },
+                success: function (data) {
+                    response(data);
+                    if (data.length > 0) {
+                        errorBusqueda.textContent = '';
+                    } else {
+                        errorBusqueda.textContent = 'NO HAY PRODUCTO CON ESE NOMBRE';
+                    }
+                }
+            });
+        },
+        minLength: 2,
+        select: function (event, ui) {
+            let precio = nombreKey == 'posCompra' ? ui.item.precio_compra : ui.item.precio_venta;
+            agregarProducto(ui.item.id, 1, ui.item.stock, precio);
+            inputBuscarNombre.value = '';
+            inputBuscarNombre.focus();
+            return false;
+        }
+    });
+
+
+    //filtro rango de fechas
+    desde.addEventListener('change', function () {
+        tblHistorial.draw();
+    })
+    hasta.addEventListener('change', function () {
+        tblHistorial.draw();
+    })
+
     $.fn.dataTable.ext.search.push(
         function (settings, data, dataIndex) {
             var FilterStart = desde.value;
@@ -55,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 })
 
-/* function buscarProducto(valor) {
+function buscarProducto(valor) {
     const url = base_url + 'productos/buscarPorCodigo/' + valor;
     //hacer una instancia del objeto XMLHttpRequest 
     const http = new XMLHttpRequest();
@@ -79,10 +128,10 @@ document.addEventListener('DOMContentLoaded', function () {
             inputBuscarCodigo.focus();
         }
     }
-} */
+}
 
 //agregar productos a localStorage
-/* function agregarProducto(idProducto, cantidad, stockActual, precio) {
+function agregarProducto(idProducto, cantidad, stockActual, precio) {
     if (localStorage.getItem(nombreKey) == null) {
         listaCarrito = [];
     } else {
@@ -126,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
     alertaPersonalizada('success', 'PRODUCTO AGREGADO');
     mostrarProducto();
 }
- */
+
 //agregar evento click para eliminar
 function btnEliminarProducto() {
     let lista = document.querySelectorAll('.btnEliminar');

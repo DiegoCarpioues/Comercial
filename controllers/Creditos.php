@@ -32,6 +32,7 @@ class Creditos extends Controller
         for ($i = 0; $i < count($data); $i++) {
             $data_json = json_encode($data[$i], JSON_UNESCAPED_UNICODE);
             $data[$i]['total']="$ ".$data[$i]['total'];
+            $data[$i]['fecha'] = date('d/m/Y', strtotime($data[$i]['fecha']));
             $data[$i]['total_abonado']="$ ".$data[$i]['total_abonado'];
             $data[$i]['total_restante']="$ ".$data[$i]['total_restante'];
             if($data[$i]['estado'] == "Activo"){

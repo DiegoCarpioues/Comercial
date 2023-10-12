@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function(){
             dataSrc: ''
         },
         columns: [
-            { data: 'fecha' },
+            {class: "fecha", data: 'fecha' },
             { data: 'nombre' },            
             { data: 'venta' },
             { data: 'total' },
@@ -224,13 +224,13 @@ document.addEventListener('DOMContentLoaded', function(){
     }); */
 
     //filtro rango de fechas
-    desde.addEventListener('change', function () {
+/*     desde.addEventListener('change', function () {
         tblCreditos.draw();
     })
     hasta.addEventListener('change', function () {
         tblCreditos.draw();
     })
-
+ */
     //Valida el monto de pago y calcula el cambio
     monto_abonar.addEventListener('change', function () {
         let totalPago = parseFloat(abono_total.value);
@@ -286,6 +286,9 @@ document.addEventListener('DOMContentLoaded', function(){
           }
         });
       }
+
+
+          //filtro rango de fechas
 
 
 /*     $.fn.dataTable.ext.search.push(
@@ -344,4 +347,38 @@ document.addEventListener('DOMContentLoaded', function(){
     }else{ // Si es menor no cae en mora
         mora.value = (parseFloat(0)).toFixed(2);
     }
+
 }
+
+
+function filtroFechas(){
+    
+    const fechaDesde = new Date(($('#desde').val()));
+    const fechaHasta = new Date(($('#hasta').val()));
+
+    console.log("Fecha desde: ",fechaDesde)
+    $('#tblCreditos tbody tr').each(function() {
+      const fechaTexto = $(this).find('.fecha').text(); // Suponiendo que la fecha esté en una columna con clase 'fecha'
+      const fecha = parseDate(fechaTexto);
+      console.log("Fecha tabla: ", fecha)
+      if (fecha >= fechaDesde && fecha <= fechaHasta) {
+        $(this).show(); // Mostrar la fila
+      } else {
+        $(this).hide(); // Ocultar la fila
+      }
+    });
+  
+}
+
+function parseDate(dateString) {
+    const parts = dateString.split('/');
+    if (parts.length === 3) {
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1; // Restamos 1 al mes porque en JavaScript los meses se cuentan desde 0 a 11
+      const year = parseInt(parts[2], 10);
+      return new Date(year + '-' + (month < 9 ? '0' : '') + (month + 1) + '-' + (day < 10 ? '0' : '') + day);
+    }
+    return null; // Devuelve null si la cadena no tiene el formato esperado
+  }
+  
+  

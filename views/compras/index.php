@@ -14,23 +14,23 @@
                 <hr>
                 <div class="btn-group btn-group-toggle mb-2" data-toggle="buttons">
                     <label class="btn btn-primary">
-                        <input type="radio" id="barcode" checked name="buscarProducto"><i class="fas fa-barcode"></i> Código
+                        <input type="radio" id="barcodeCompras" checked name="buscarProducto"><i class="fas fa-barcode"></i> Código
                     </label>
                     <label class="btn btn-info">
-                        <input type="radio" id="nombre" name="buscarProducto"><i class="fas fa-list"></i> Nombre
+                        <input type="radio" id="nombreCompras" name="buscarProducto"><i class="fas fa-list"></i> Nombre
                     </label>
                 </div>
             <div class="col-md-6">
                 <!-- input para buscar codigo -->
-                <div class="input-group mb-2" id="containerCodigo">
+                <div class="input-group mb-2" id="containerCodigoCompras">
                     <span class="input-group-text"><i class="fas fa-search"></i></span>
-                    <input class="form-control" type="text" id="buscarProductoCodigo" placeholder="Ingrese Código - Enter" autocomplete="off">
+                    <input class="form-control" type="text" id="buscarProductoCodigoCompras" placeholder="Ingrese Código - Enter" autocomplete="off">
                 </div>
 
                 <!-- input para buscar nombre -->
-                <div class="input-group d-none mb-2" id="containerNombre">
+                <div class="input-group d-none mb-2" id="containerNombreCompras">
                     <span class="input-group-text"><i class="fas fa-search"></i></span>
-                    <input class="form-control" type="text" id="buscarProductoNombre" placeholder="Buscar Producto" autocomplete="off">
+                    <input class="form-control" type="text" id="buscarProductoNombreCompras" placeholder="Buscar Producto" autocomplete="off">
                 </div>
 
                 <span class="text-danger fw-bold mb-2" id="errorBusqueda"></span>
