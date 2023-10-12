@@ -77,6 +77,7 @@ ON
         cl.nombre,
         cl.telefono,
         cl.direccion,
+        cl.correo,
         v.serie as venta,
         c.cuota,
         c.total,
@@ -111,12 +112,12 @@ ON
     public function getAbonos($idCredito)
     {
         $sql = "SELECT
-        *,
+        ab.*,
         CASE
-            WHEN mora = TRUE THEN abono * 0.05
+            WHEN mora = TRUE THEN c.cuota * 0.05
             ELSE 0
         END AS mora_calculada
-    FROM abonos WHERE id_credito= $idCredito ORDER BY numero ASC";
+    FROM abonos as ab, creditos as c WHERE   ab.id_credito =c.id AND id_credito= $idCredito ORDER BY numero ASC";
         return $this->selectAll($sql);
     }
 

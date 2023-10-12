@@ -150,7 +150,7 @@ class Creditos extends Controller
         $dompdf->setOptions($options);
         $dompdf->loadHtml($html);
 
-        //$dompdf->setPaper('A4', 'vertical');
+        //formato de papel de ticked
         $dompdf->setPaper(array(0, 0, 130, 841), 'portrait');
 
         // Render the HTML as PDF
@@ -164,27 +164,9 @@ class Creditos extends Controller
         // ENVIAR TICKET AL CORREO DEL CLIENTE
         public function enviarCorreo($idCredito)
         {
-/*             $arrayDetProd = array();
-    
-            $dat = $this->model->getDetalleVenta($idVenta);
-            foreach ($dat as $row) {
-                $result['cantidad'] = $row['cantidad'];
-                $result['descripcion'] = $row['descripcion'];
-                $result['precio'] = $row['precio'];
-                $result['total'] = $row['total'];
-                array_push($arrayDetProd, $result);
-            }
-    
-            $data['detalle_venta'] = $arrayDetProd;
-            $data['venta'] = $this->model->getVenta($idVenta);
-    
+
             ob_start();
             $data['title'] = 'Reporte';
-            $this->views->getView('ventas', 'ticket_cliente', $data);
-            $html = ob_get_clean(); */
-            ob_start();
-            $data['title'] = 'Reporte';
-           // $data['empresa'] = $this->model->getEmpresa();
             $data['credito'] = $this->model->getCredito($idCredito);
             $data['abonos'] = $this->model->getAbonos($idCredito);
             $data['productos'] = $this->model->getProductos($data['credito']['id_venta']);
@@ -211,7 +193,7 @@ class Creditos extends Controller
     
                     //Recipients
                    // $mail->setFrom($data['empresa']['correo'], $data['empresa']['nombre']);
-                    $mail->addAddress('20carpioronaldo@gmail.com');
+                    $mail->addAddress($data['credito']['correo']);
     
                     //Content
                     $mail->isHTML(true);
