@@ -36,10 +36,19 @@ class Productos extends Controller
         for ($i = 0; $i < count($data); $i++) {
             $foto = ($data[$i]['foto'] == null) ? 'assets/images/productos/default.png' :  $data[$i]['foto'];
             $data[$i]['imagen'] = '<img class="img-thumbnail" src="' . BASE_URL . $foto . '" width="50">';
-            $data[$i]['acciones'] = '<div>
-            <button class="btn btn-danger" type="button" onclick="eliminarProducto(' . $data[$i]['id'] . ')"><i class="fas fa-trash"></i></button>
-            <button class="btn btn-info" type="button" onclick="editarProducto(' . $data[$i]['id'] . ')"><i class="fas fa-edit"></i></button>
-            </div>';
+            
+            if($data[$i]['estado']==1){
+                $data[$i]['acciones'] = '<div>
+                <button class="btn btn-danger" type="button" onclick="eliminarProducto(' . $data[$i]['id'] . ')"><i class="fas fa-trash"></i></button>
+                <button class="btn btn-info" type="button" onclick="editarProducto(' . $data[$i]['id'] . ')"><i class="fas fa-edit"></i></button>
+                </div>';
+            }else{
+                $data[$i]['acciones'] = '<div>
+                <button class="btn btn-success" type="button" onclick="activarProducto(' . $data[$i]['id'] . ')"><i class="fas fa-trash"></i></button>
+                <button class="btn btn-info" type="button" onclick="editarProducto(' . $data[$i]['id'] . ')"><i class="fas fa-edit"></i></button>
+                </div>';
+            }
+            
         }
     
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
@@ -154,6 +163,23 @@ class Productos extends Controller
             $data = $this->model->eliminar(0, $idProducto);
             if ($data == 1) {
                 $res = array('msg' => 'PRODUCTO DADO DE BAJA', 'type' => 'success');
+            } else {
+                $res = array('msg' => 'ERROR AL ELIMINAR', 'type' => 'error');
+            }
+        } else {
+            $res = array('msg' => 'ERROR DESCONOCIDO', 'type' => 'error');
+        }
+        echo json_encode($res);
+        die();
+    }
+
+
+    public function activar($idProducto)
+    {
+        if (isset($_GET) && is_numeric($idProducto)) {
+            $data = $this->model->eliminar(1, $idProducto);
+            if ($data == 1) {
+                $res = array('msg' => 'PRODUCTO DADO DE ALTA', 'type' => 'success');
             } else {
                 $res = array('msg' => 'ERROR AL ELIMINAR', 'type' => 'error');
             }

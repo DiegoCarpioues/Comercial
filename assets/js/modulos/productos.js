@@ -153,6 +153,12 @@ function eliminarProducto(idProducto) {
 
     
 }
+// Sirve para reactivar el producto
+function activarProducto(idProducto) {
+    const url = base_url + 'productos/activar/' + idProducto;
+    activarRegistros(url, tblProductos);
+    
+}
 
 function editarProducto(idProducto) {
     limpiarCampos();
