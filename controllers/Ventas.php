@@ -172,10 +172,12 @@ class Ventas extends Controller
         
         $dat = $this->model->getDetalleVenta($idVenta);
         foreach ($dat as $row) {
+            $data2 = $this->model->buscarProdDispVentas($row['codigo']);
+            $precioProd = $data2[0]['precio'];
             $result['cantidad'] = $row['cantidad'];
             $result['descripcion'] = $row['descripcion'];
-            $result['precio'] = $row['precio'];
-            $result['total'] = $row['total'];
+            $result['precio'] = $precioProd;
+            $result['total'] = $row['cantidad'] * $precioProd;
             array_push($arrayDetProd, $result);
         }
 
@@ -211,6 +213,15 @@ class Ventas extends Controller
     {
         $data = $this->model->getVentas();
         for ($i = 0; $i < count($data); $i++) {
+            $data2 = $this->model->buscarProdDispVentas($data[$i]['codigo']);
+            $precioProd = $data2[0]['precio'];//249.33
+            $cantVend = $data[$i]['cantidad'];
+            $desc = $data[$i]['descuento'];
+            $subtotal = $precioProd*$cantVend;
+            $descuento = ($subtotal*($desc/100));//13.71
+            $totalSinIVA = ($subtotal - $descuento);//260.55
+            $iva = $totalSinIVA*0.13;//33.87
+            $data[$i]['total'] = (round($totalSinIVA+$iva,2));//294.42
             if ($data[$i]['estado'] == 1) {
                 $data[$i]['estado'] = '<div>
                 <span class="badge bg-success">Completado</span>
@@ -385,10 +396,12 @@ class Ventas extends Controller
 
         $dat = $this->model->getDetalleVenta($idVenta);
         foreach ($dat as $row) {
+            $data2 = $this->model->buscarProdDispVentas($row['codigo']);
+            $precioProd = $data2[0]['precio'];
             $result['cantidad'] = $row['cantidad'];
             $result['descripcion'] = $row['descripcion'];
-            $result['precio'] = $row['precio'];
-            $result['total'] = $row['total'];
+            $result['precio'] = $precioProd;
+            $result['total'] = $row['cantidad'] * $precioProd;
             array_push($arrayDetProd, $result);
         }
 

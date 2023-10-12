@@ -181,8 +181,8 @@
                     <table class="table table-bordered table-striped table-hover align-middle nowrap" id="tblHistorial" style="width: 100%;">
                         <thead>
                             <tr>
-                                <th>Fecha</th>
                                 <th>Serie</th>
+                                <th>Fecha</th>
                                 <th>Hora</th>
                                 <th>Metodo</th>
                                 <th>Descuento</th>

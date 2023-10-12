@@ -266,8 +266,8 @@ document.addEventListener("DOMContentLoaded", function () {
       dataSrc: "",
     },
     columns: [
-      { class: "fecha", data: "fecha" },
       { data: "serie" },
+      { class: "fecha", data: "fecha" },
       { data: "hora" },
       { data: "metodo" },
       { data: "descuento" },

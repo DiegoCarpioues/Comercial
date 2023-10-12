@@ -83,15 +83,15 @@
                 $subTotal += $detalle['total'];
             }
 
-            $ventSinIva = $subTotal / 1.13;//quitandole el IVA
-            $igv = $ventSinIva * 0.13;//calculando el IVA
-            $total = $ventSinIva + $igv;
-            $totalCD = $total;//ya viene con descuento
-            $totalSD = $data['venta']['total'] + ($data['venta']['total'] * ($data['venta']['descuento']/100));
+            $igv = $subTotal * 0.13;//calculando el IVA
+            $total = $subTotal + $igv;
+            $totalSD = $total;
+            $totalCD = $totalSD - ($totalSD * ($data['venta']['descuento']/100));
+            //$totalSD = $data['venta']['total'] + ($data['venta']['total'] * ($data['venta']['descuento']/100));
             ?>
             <tr class="total">
                 <td class="text-right" colspan="3">SubTotal</td>
-                <td class="text-right"><?php echo number_format($ventSinIva, 2); ?></td>
+                <td class="text-right"><?php echo number_format($subTotal, 2); ?></td>
             </tr>
             <tr class="total">
                 <td class="text-right" colspan="3">IVA 13%</td>
