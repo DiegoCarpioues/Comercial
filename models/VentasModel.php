@@ -63,7 +63,7 @@ class VentasModel extends Query{
         //$sql = "SELECT v.*, c.nombre FROM ventas v INNER JOIN clientes c ON v.id_cliente = c.id";
 
         $sql = "SELECT v.id, DATE_FORMAT(v.fecha, '%d/%m/%Y') AS fecha, DATE_FORMAT(v.hora, '%h:%i %p') AS hora, v.metodo, v.descuento, v.serie,
-            v.estado, cli.nombre,
+            v.estado, cli.nombre, dtv.cantidad,p.codigo,p.ganancia,
             ROUND(SUM((((p.ganancia/100) * c.precio) + c.precio) * dtv.cantidad),2) AS total
         FROM detalle_venta dtv
         INNER JOIN ventas AS v ON dtv.id_venta = v.id
@@ -178,6 +178,7 @@ class VentasModel extends Query{
             ventas.id,
             productos.id AS id_producto, 
             productos.producto,
+            productos.codigo,
             productos.descripcion,
             ROUND(((productos.ganancia/100) * compras.precio) + compras.precio, 2)AS precio,
             detalle_venta.cantidad,
@@ -230,6 +231,7 @@ class VentasModel extends Query{
         //$sql = "SELECT v.*, c.num_identidad, c.nombre, c.telefono, c.correo, c.direccion FROM ventas v INNER JOIN clientes c ON v.id_cliente = c.id WHERE v.id = $idVenta";
         $sql = " SELECT
         productos.producto,
+        productos.codigo,
         productos.descripcion, 
         ROUND(((productos.ganancia/100) * compras.precio) + compras.precio, 2)AS precio, 
         detalle_venta.cantidad,
