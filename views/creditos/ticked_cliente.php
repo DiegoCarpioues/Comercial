@@ -74,7 +74,7 @@
                     <td class="text-center"><?php echo number_format($data['credito']['cuota'],2); ?></td>
                     <td class="text-center"><?php echo number_format($abono[$i]['mora_calculada'],2); ?></td>
                     <td class="text-center"><?php echo number_format($abono[$i]['abono'], 2); ?></td>
-                    <td class="text-center"><?php echo number_format($abono[$i]['abono'] -$data['credito']['cuota'], 2); ?></td>
+                    <td class="text-center"><?php echo number_format($abono[$i]['abono'] -($data['credito']['cuota']+$abono[$i]['mora_calculada']), 2); ?></td>
                 </tr>
             <tr class="total">
                 <td></td>
