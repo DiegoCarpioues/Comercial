@@ -27,7 +27,7 @@
                     <div class="col-md-3 mb-2">
                         <div class="input-group">
                             <span class="input-group-text">N° Factura</span>
-                            <input class="form-control" type="text" value="<?php echo $data['serie'][0]; ?>" disabled>
+                            <input class="form-control" type="text" id="serie" value="<?php echo $data['serie'][0]; ?>" disabled>
                         </div>
                     </div>
                 </div>
@@ -35,13 +35,13 @@
                 <!-- input para buscar codigo -->
                 <div class="input-group mb-2" id="containerCodigo">
                     <span class="input-group-text"><i class="fas fa-search"></i></span>
-                    <input class="form-control" type="text" id="buscarProductoCodigo" placeholder="Ingrese Barcode - Enter" autocomplete="off">
+                    <input class="form-control" type="text" id="buscarProductoCodigoVenta" placeholder="Ingrese Barcode - Enter" autocomplete="off">
                 </div>
 
                 <!-- input para buscar nombre -->
                 <div class="input-group d-none mb-2" id="containerNombre">
                     <span class="input-group-text"><i class="fas fa-search"></i></span>
-                    <input class="form-control" type="text" id="buscarProductoNombre" placeholder="Buscar Producto" autocomplete="off">
+                    <input class="form-control" type="text" id="buscarProductoNombreVenta" placeholder="Buscar Producto" autocomplete="off">
                 </div>
 
                 <span class="text-danger fw-bold mb-2" id="errorBusqueda"></span>
@@ -70,9 +70,10 @@
                     <div class="col-md-4">
                         <label>Buscar Cliente</label>
                         <div class="input-group mb-2">
-                            <input type="hidden" id="idCliente" value="1">
                             <span class="input-group-text"><i class="fas fa-search"></i></span>
                             <input class="form-control" type="text" id="buscarCliente" placeholder="Buscar Cliente">
+                            
+                            <input type="hidden" id="idCliente" >
                         </div>
 
                         <span class="text-danger fw-bold mb-2" id="errorCliente"></span>
@@ -82,44 +83,44 @@
                             <span class="input-group-text"><i class="fas fa-phone"></i></span>
                             <input class="form-control" type="text" id="telefonoCliente" placeholder="Telefono" disabled>
                         </div>
-
                         <label>Dirección</label>
-                        <ul class="list-group">
-                            <li class="list-group-item" id="direccionCliente"><i class="fas fa-home"></i></li>
-                        </ul>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label>Pagar con</label>
                         <div class="input-group mb-2">
-                            <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                            <input class="form-control" type="text" id="pagar_con" placeholder="0.00">
-                        </div>
-                        <label>Cambio</label>
-                        <div class="input-group mb-2">
-                            <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                            <input class="form-control" type="text" id="cambio" placeholder="0.00" readonly>
+                            <span class="input-group-text"><i class="fas fa-home"></i></span>
+                            <input class="form-control" type="text" id="direccionCliente" placeholder="Dirección">
                         </div>
                         <label>Vendedor</label>
                         <div class="input-group mb-2">
                             <span class="input-group-text"><i class="fas fa-user"></i></span>
-                            <input class="form-control" type="text" value="<?php echo $_SESSION['nombre_usuario']; ?>" placeholder="Vendedor" disabled>
+                            <input class="form-control" type="text" id="idUsuario" value="<?php echo $_SESSION['nombre_usuario']; ?>" placeholder="Vendedor" disabled>
                         </div>
                     </div>
-                    <div class="col-md-4">                       
-                        <label>Descuento</label>
+
+                    <div class="col-md-4">
+                        <label> Venta Total </label>
                         <div class="input-group mb-2">
                             <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                            <input class="form-control" type="text" id="descuento" placeholder="Descuento">
+                            <input class="form-control" type="number" id="sumaTotalVenta" placeholder="0.00" disabled>
                         </div>
-
+                        <label>Descuento</label>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text"><i class="fas fa-percent"></i></span>
+                            <input class="form-control" type="number" sleep="1" min="0" max="100" value="0" id="descuento" >
+                        </div>
                         <label>Total a Pagar</label>
                         <div class="input-group mb-2">
                             <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                            <input class="form-control" type="text" id="totalPagar" placeholder="Total Pagar" disabled>
+                            <input class="form-control" type="text" id="totalPagar" value="0.00" placeholder="Total Pagar" disabled>
                             <input class="form-control" type="hidden" id="totalPagarHidden" >
                         </div>
-
+                        <div class="esCredito">
+                            <label>Prima</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                <input class="form-control" type="number" id="prima" placeholder="0.00">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">   
                         <div class="form-group mb-2">
                             <label for="metodo">Metodo</label>
                             <select id="metodo" class="form-control">
@@ -127,35 +128,68 @@
                                 <option value="CREDITO">CREDITO</option>
                             </select>
                         </div>
+                        <div class="esContado">
+                            <label>Pago</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                <input class="form-control" type="number" min="0.00" value="0.00" id="pago" placeholder="0.00" >
+                            </div>
+                            <span class="text-danger fw-bold mb-2" id="errorPago"></span>
+                            <label>Cambio</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                <input class="form-control text-danger" type="text" id="cambio" placeholder="0.00" readonly>
+                            </div>
+                        </div>
 
+                        <div class="esCredito">
+                            <label>Meses plazo</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                <input class="form-control" type="number" id="mesesPlazo" placeholder="0.00">
+                            </div>
+                            <label>Interes Mensual</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                <input class="form-control" type="number" id="interesMensual" value="0" placeholder="0">
+                            </div>
+                            <label>Cuota mensual</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                <input class="form-control" type="text" id="cuotaMensual" placeholder="Cuota mensual" disabled>
+                                <input class="form-control" type="hidden" id="cuotaMensualHidden" >
+                            </div>
+                        </div>
                         <div class="d-grid">
-                            <button class="btn btn-primary" type="button" id="btnAccion">Completar</button>
+                            <button class="btn btn-primary" type="button" id="btnGuardarVenta">Completar</button>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="tab-pane fade p-3" id="nav-historial" role="tabpanel" aria-labelledby="nav-historial-tab" tabindex="0">
                 <div class="d-flex justify-content-center mb-3">
-                    <div class="form-group">
+                <div class="form-group">
                         <label for="desde">Desde</label>
-                        <input id="desde" class="form-control" type="date">
+                        <input type="date" id="desde" onchange="filtroFechas()" class="form-control" >
                     </div>
                     <div class="form-group">
                         <label for="hasta">Hasta</label>
-                        <input id="hasta" class="form-control" type="date">
+                        <input type="date" id="hasta" onchange="filtroFechas()" class="form-control" >
                     </div>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped table-hover align-middle nowrap" id="tblHistorial" style="width: 100%;">
                         <thead>
                             <tr>
+                                <th>Serie</th>
                                 <th>Fecha</th>
                                 <th>Hora</th>
-                                <th>Total</th>
-                                <th>Cliente</th>
-                                <th>Serie</th>
                                 <th>Metodo</th>
-                                <th></th>
+                                <th>Descuento</th>
+                                <th>Estado</th>
+                                <th>Cliente</th>
+                                <th>Total</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
 

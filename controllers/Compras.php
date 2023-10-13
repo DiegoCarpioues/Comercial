@@ -29,6 +29,27 @@ class Compras extends Controller
         $data['carrito'] = 'posCompra';
         $this->views->getView('compras', 'index', $data);
     }
+    public function listar()
+    {
+        $data = $this->model->getCompras();
+
+        for ($i = 0; $i < count($data); $i++) {
+            if ($data[$i]['estado'] == 1) {
+                $data[$i]['acciones'] = '<div>
+                <a class="btn btn-warning" href="#" onclick="anularCompra(' . $data[$i]['id'] . ')"><i class="fas fa-trash"></i></a>
+                <a class="btn btn-danger" href="#" onclick="verReporte(' . $data[$i]['id'] . ')"><i class="fas fa-file-pdf"></i></a>
+                </div>';
+            } else {
+                $data[$i]['acciones'] = '<div>
+                <span class="badge bg-info">Anulado</span>
+                <a class="btn btn-danger" href="#" onclick="verReporte(' . $data[$i]['id'] . ')"><i class="fas fa-file-pdf"></i></a>
+                </div>';
+            }
+        }
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        die();
+    }
+
     public function registrarCompra()
     {
         $json = file_get_contents('php://input');
@@ -37,49 +58,29 @@ class Compras extends Controller
         $total = 0;
         if (!empty($datos['productos'])) {
             $indice = $datos['serie'];
-            $numberSerie = $this->generate_numbers($indice, 1, 8);
+            date_default_timezone_set('America/El_Salvador');
             $fecha = date('Y-m-d');
             $hora = date('H:i:s');
-            $serie = $numberSerie[0];
+            $serie = $datos['serie'];
             $idproveedor = $datos['idProveedor'];
             if (empty($idproveedor)) {
                 $res = array('msg' => 'EL PROVEEDOR ES REQUERIDO', 'type' => 'warning');
             } else if (empty($serie)) {
                 $res = array('msg' => 'LA SERIE ES REQUERIDO', 'type' => 'warning');
             } else {
-                $saldo = $this->caja->getDatos();
-                foreach ($datos['productos'] as $producto) {
-                    $result = $this->model->getProducto($producto['id']);
-                    $data['id'] = $result['id'];
-                    $data['nombre'] = $result['descripcion'];
-                    $data['precio'] = $result['precio_compra'];
-                    $data['cantidad'] = $producto['cantidad'];
-                    $subTotal = $result['precio_compra'] * $producto['cantidad'];
-                    array_push($array['productos'], $data);
-                    $total += $subTotal;
-                }
-                if ($saldo['saldo'] >= $total) {
-                    $datosProductos = json_encode($array['productos']);
-                    $compra = $this->model->registrarCompra($datosProductos, $total, $fecha, $hora, $serie, $idproveedor, $this->id_usuario);
-                    if ($compra > 0) {
+                    
+                    if ($datos > 0) {
                         foreach ($datos['productos'] as $producto) {
-                            $result = $this->model->getProducto($producto['id']);
-                            //actualizar stock
-                            $nuevaCantidad = $result['cantidad'] + $producto['cantidad'];
-                            $this->model->actualizarStock($nuevaCantidad, $result['id']);
-                            $movimiento = 'Compra N°: ' . $compra;
-                            $this->model->registrarMovimiento($movimiento, 'entrada', $producto['cantidad'], $nuevaCantidad, $producto['id'], $this->id_usuario);
+            
+                            $this->model->registrarCompra($producto['id'], $producto['cantidad'], $producto['precio'], $fecha, $hora,$serie,true, $idproveedor, $this->id_usuario,true);
                         }
-                        $res = array('msg' => 'COMPRA GENERADA', 'type' => 'success', 'idCompra' => $compra);
+                        $res = array('msg' => 'COMPRA REGISTRADA', 'type' => 'success');
                     } else {
                         $res = array('msg' => 'ERROR AL CREAR COMPRA', 'type' => 'error');
                     }
-                } else {
-                    $res = array('msg' => 'SALDO DISPONIBLE: ' . MONEDA . $saldo['saldo'], 'type' => 'warning');
-                }
             }
         } else {
-            $res = array('msg' => 'CARRITO VACIO', 'type' => 'warning');
+            $res = array('msg' => 'COMPRA VACIA', 'type' => 'warning');
         }
         echo json_encode($res);
         die();
@@ -121,44 +122,16 @@ class Compras extends Controller
         $dompdf->stream('ticked.pdf', array('Attachment' => false));
     }
 
-    public function listar()
-    {
-        $data = $this->model->getCompras();
-        for ($i = 0; $i < count($data); $i++) {
-            if ($data[$i]['estado'] == 1) {
-                $data[$i]['acciones'] = '<div>
-                <a class="btn btn-warning" href="#" onclick="anularCompra(' . $data[$i]['id'] . ')"><i class="fas fa-trash"></i></a>
-                <a class="btn btn-danger" href="#" onclick="verReporte(' . $data[$i]['id'] . ')"><i class="fas fa-file-pdf"></i></a>
-                </div>';
-            } else {
-                $data[$i]['acciones'] = '<div>
-                <span class="badge bg-info">Anulado</span>
-                <a class="btn btn-danger" href="#" onclick="verReporte(' . $data[$i]['id'] . ')"><i class="fas fa-file-pdf"></i></a>
-                </div>';
-            }
-        }
-        echo json_encode($data);
-        die();
-    }
+
 
     public function anular($idCompra)
     {
         if (isset($_GET) && is_numeric($idCompra)) {
             $data = $this->model->anular($idCompra);
             if ($data == 1) {
-                $resultCompra = $this->model->getCompra($idCompra);
-                $compraProducto = json_decode($resultCompra['productos'], true);
-                foreach ($compraProducto as $producto) {
-                    $result = $this->model->getProducto($producto['id']);
-                    $nuevaCantidad = $result['cantidad'] - $producto['cantidad'];
-                    $this->model->actualizarStock($nuevaCantidad, $producto['id']);
-                    //movimientos
-                    $movimiento = 'Devolución Compra N°: ' . $idCompra;
-                    $this->model->registrarMovimiento($movimiento, 'salida', $producto['cantidad'], $nuevaCantidad, $producto['id'], $this->id_usuario);
-                }
-                $res = array('msg' => 'COMPRA ANULADO', 'type' => 'success');
+                $res = array('msg' => 'PRODUCTO DADO DE BAJA', 'type' => 'success');
             } else {
-                $res = array('msg' => 'ERROR AL ANULAR', 'type' => 'error');
+                $res = array('msg' => 'ERROR AL ELIMINAR', 'type' => 'error');
             }
         } else {
             $res = array('msg' => 'ERROR DESCONOCIDO', 'type' => 'error');

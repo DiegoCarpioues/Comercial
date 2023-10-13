@@ -63,31 +63,36 @@
             <tr>
                 <th>Cantidad</th>
                 <th>Descripción</th>
-                <th><?php echo($data['venta']['metodo'] == 'CONTADO'? 'Precio': 'Prima');?></th>
+                <th>Precio</th>
                 <th>SubTotal</th>
             </tr>
         </thead>
         <tbody>
             <?php
-            $subTotal = 0;
-        if($data['venta']['metodo'] == 'CONTADO'){
-            foreach ($data['detalle_venta'] as $detalle) {
-                ?>
-                    <tr>
-                        <td><?php echo $detalle['cantidad']; ?></td>
-                        <td><?php echo $detalle['descripcion']; ?></td>
-                        <td><?php echo number_format($detalle['precio'], 2); ?></td>
-                        <td><?php echo number_format($detalle['total'], 2); ?></td>
-                    </tr>
-                <?php
-                $subTotal += $detalle['total'];
-            }
-            $igv = $subTotal * 0.13;//calculando el IVA
+            
+            $productos = json_decode($data['venta']['productos'], true);
+            //IGV incluido
+            //$subTotal = $data['venta']['total'] * 0.13;
+            //$igv = $data['venta']['total'] - $subTotal;
+            //$totalSD = $data['venta']['total'] - $data['venta']['descuento'];
+            //$totalCD = $data['venta']['total'];
+
+            //IGV no incluido
+            $subTotal = $data['venta']['total'];
+            $igv = $subTotal * 0.13;
             $total = $subTotal + $igv;
-            $totalSD = $total;
-            $totalCD = $totalSD - ($totalSD * ($data['venta']['descuento']/100));
-            //$totalSD = $data['venta']['total'] + ($data['venta']['total'] * ($data['venta']['descuento']/100));
-            ?>
+            $totalCD = $data['venta']['total'];
+            $totalSD = $data['venta']['total'] - $data['venta']['descuento'];
+
+
+            foreach ($productos as $producto) { ?>
+                <tr>
+                    <td><?php echo $producto['cantidad']; ?></td>
+                    <td><?php echo $producto['nombre']; ?></td>
+                    <td><?php echo number_format($producto['precio'], 2); ?></td>
+                    <td><?php echo number_format($producto['cantidad'] * $producto['precio'], 2); ?></td>
+                </tr>
+            <?php } ?>
             <tr class="total">
                 <td class="text-right" colspan="3">SubTotal</td>
                 <td class="text-right"><?php echo number_format($subTotal, 2); ?></td>
@@ -97,50 +102,20 @@
                 <td class="text-right"><?php echo number_format($igv, 2); ?></td>
             </tr>
             <tr class="total">
-                <td class="text-right" colspan="3">Descuento %</td>
-                <td class="text-right"><?php echo number_format($data['venta']['descuento'], 2); ?></td>
-            </tr>
-            <tr class="total">
-                <td class="text-right" colspan="3">Total sin descuento $</td>
+                <td class="text-right" colspan="3">Total con Descuento</td>
                 <td class="text-right"><?php echo number_format($totalSD, 2); ?></td>
             </tr>
             <tr class="total">
-                <td class="text-right" colspan="3">Total con descuento $</td>
+                <td class="text-right" colspan="3">Total sin Descuento</td>
                 <td class="text-right"><?php echo number_format($totalCD, 2); ?></td>
             </tr>
-            <?php
-        }else{
-            foreach ($data['detalle_venta'] as $detalle) {
-                ?>
-                    <tr>
-                        <td><?php echo $detalle['cantidad']; ?></td>
-                        <td><?php echo $detalle['descripcion']; ?></td>
-                        <td><?php echo number_format($detalle['precio'], 2); ?></td>
-                        <td><?php echo number_format($detalle['total'], 2); ?></td>
-                    </tr>
-                <?php
-                $subTotal = $detalle['total'];
-                }
-            $subTotal = $subTotal;
-            ?>
-            <tr class="total">
-                <td class="text-right" colspan="3">Prima $</td>
-                <td class="text-right"><?php echo number_format($subTotal, 2); ?></td>
-            </tr>
-            <?php
-        }
-            ?>
         </tbody>
     </table>
     <div class="mensaje">
     <h4><strong>METODO: <?php echo $data['venta']['metodo'] ?>
         <p><strong>DUDAS</strong> ESCRIBENOS AL CORREO <a href="www.gmail.com">snsdi2023@gmail.com</a></p>
         <?php if ($data['venta']['estado'] == 0) { ?>
-            <h1>Venta Pendiente</h1>
-        <?php }else if ($data['venta']['estado'] == 1) { ?>
-            <h1>Venta Completada</h1>
-        <?php }else{ ?>
-            <h1>Producto Apartado</h1>
+            <h1>Venta Anulado</h1>
         <?php } ?>
     </div>
 

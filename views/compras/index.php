@@ -14,42 +14,46 @@
                 <hr>
                 <div class="btn-group btn-group-toggle mb-2" data-toggle="buttons">
                     <label class="btn btn-primary">
-                        <input type="radio" id="barcode" checked name="buscarProducto"><i class="fas fa-barcode"></i> Barcode
+                        <input type="radio" id="barcodeCompras" checked name="buscarProducto"><i class="fas fa-barcode"></i> Código
                     </label>
                     <label class="btn btn-info">
-                        <input type="radio" id="nombre" name="buscarProducto"><i class="fas fa-list"></i> Nombre
+                        <input type="radio" id="nombreCompras" name="buscarProducto"><i class="fas fa-list"></i> Nombre
                     </label>
                 </div>
+            <div class="col-md-6">
                 <!-- input para buscar codigo -->
-                <div class="input-group mb-2" id="containerCodigo">
+                <div class="input-group mb-2" id="containerCodigoCompras">
                     <span class="input-group-text"><i class="fas fa-search"></i></span>
-                    <input class="form-control" type="text" id="buscarProductoCodigo" placeholder="Ingrese Barcode - Enter" autocomplete="off">
+                    <input class="form-control" type="text" id="buscarProductoCodigoCompras" placeholder="Ingrese Código - Enter" autocomplete="off">
                 </div>
 
                 <!-- input para buscar nombre -->
-                <div class="input-group d-none mb-2" id="containerNombre">
+                <div class="input-group d-none mb-2" id="containerNombreCompras">
                     <span class="input-group-text"><i class="fas fa-search"></i></span>
-                    <input class="form-control" type="text" id="buscarProductoNombre" placeholder="Buscar Producto" autocomplete="off">
+                    <input class="form-control" type="text" id="buscarProductoNombreCompras" placeholder="Buscar Producto" autocomplete="off">
                 </div>
 
                 <span class="text-danger fw-bold mb-2" id="errorBusqueda"></span>
-
+            </div>
                 <!-- table productos -->
-
+                <br>
+                <br>
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped table-hover align-middle" id="tblNuevaCompra" style="width: 100%;">
                         <thead>
                             <tr>
                                 <th>Producto</th>
-                                <th>Precio</th>
                                 <th>Cantidad</th>
-                                <th>SubTotal</th>
+                                <th>Precio</th>
+                                <th>Subtotal</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
                         </tbody>
                     </table>
+                    <center><h5 id="total"></h5></center>
+                    
                 </div>
 
                 <hr>
@@ -83,16 +87,10 @@
                             <input class="form-control" type="text" value="<?php echo $_SESSION['nombre_usuario']; ?>" placeholder="Comprador" disabled>
                         </div>
 
-                        <label>Total a Pagar</label>
-                        <div class="input-group mb-2">
-                            <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                            <input class="form-control" type="text" id="totalPagar" placeholder="Total Pagar" disabled>
-                        </div>
-
                         <label>Serie</label>
                         <div class="input-group mb-2">
                             <span class="input-group-text"><i class="fas fa-spinner"></i></span>
-                            <input class="form-control" type="text" id="serie" placeholder="Serie Compra">
+                            <input class="form-control" type="text" id="serie" onkeypress="return soloNumeros(event)" placeholder="Serie Compra">
                         </div>
 
                         <div class="d-grid">
@@ -105,20 +103,23 @@
                 <div class="d-flex justify-content-center mb-3">
                     <div class="form-group">
                         <label for="desde">Desde</label>
-                        <input id="desde" class="form-control" type="date">
+                        <input type="date" id="desde" onchange="filtroFechas()" class="form-control" >
                     </div>
                     <div class="form-group">
                         <label for="hasta">Hasta</label>
-                        <input id="hasta" class="form-control" type="date">
+                        <input type="date" id="hasta" onchange="filtroFechas()" class="form-control" >
                     </div>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped table-hover align-middle nowrap" id="tblHistorial" style="width: 100%;">
+                  <table class="table table-bordered table-striped table-hover nowrap" id="tblHistorial" style="width: 100%;">
                         <thead>
                             <tr>
                                 <th>Fecha</th>
-                                <!--<th>Hora</th> -->
-                                <th>Total</th>
+                                <th>Hora</th>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio $</th>
+                                <th>Subtotal $</th>
                                 <th>Proveedor</th>
                                 <th>Serie</th>
                                 <th>Acciones</th>

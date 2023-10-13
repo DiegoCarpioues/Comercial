@@ -14,7 +14,7 @@ const totalPagar = document.querySelector('#totalPagar');
 const desde = document.querySelector('#desde');
 const hasta = document.querySelector('#hasta');
 
-let listaCarrito, tblHistorial;
+let listaCarrito;
 
 document.addEventListener('DOMContentLoaded', function () {
     //comprobar productos en localStorage
@@ -37,6 +37,9 @@ document.addEventListener('DOMContentLoaded', function () {
         errorBusqueda.textContent = '';
         inputBuscarCodigo.focus();
     })
+
+
+  
 
     inputBuscarCodigo.addEventListener('keyup', function (e) {
         if (e.keyCode === 13) {

@@ -26,6 +26,7 @@ class Proveedor extends Controller
             header('Location: ' . BASE_URL . 'admin/permisos');
             exit;
         }
+
         $data = $this->model->getProveedores(1);
         for ($i = 0; $i < count($data); $i++) {
             $data[$i]['acciones'] = '<div>

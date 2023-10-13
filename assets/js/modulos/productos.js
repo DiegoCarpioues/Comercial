@@ -18,21 +18,23 @@ const errorNombre = document.querySelector('#errorNombre');
 const errorCompra = document.querySelector('#errorCompra');
 const errorVenta = document.querySelector('#errorVenta');
 const errorCategoria = document.querySelector('#errorCategoria');
+const filtro = document.querySelector('#filtro');
 
 document.addEventListener('DOMContentLoaded', function () {
     //cargar datos con el plugin datatables
-    tblProductos = $('#tblProductos').DataTable({
+   tblProductos=$('#tblProductos').DataTable({
         ajax: {
-            url: base_url + 'productos/listar',
+            url: base_url + 'productos/listar/'+true,
             dataSrc: ''
         },
         columns: [
             { data: 'codigo' },
-            { data: 'descripcion' },
-            { data: 'precio_compra' },
-            { data: 'precio_venta' },
-            { data: 'cantidad' },
+            { data: 'producto' },
+            { data: 'marca' },
+            { data: 'modelo' },
+            { data: 'ganancia' },
             { data: 'categoria' },
+            { data: 'descripcion' },
             { data: 'imagen' },
             { data: 'acciones' }
         ],
@@ -44,6 +46,52 @@ document.addEventListener('DOMContentLoaded', function () {
         responsive: true,
         order: [[0, 'asc']],
     });
+
+  
+
+    //Filtro de estados de quipo
+
+    filtro.addEventListener('change', function (e) {
+        
+        console.log("Estado: ", filtro.value)
+
+        if(filtro.value=="Activo"){
+            tabla(true);
+        }else if(filtro.value=="Inactivo"){
+            tabla(false);
+        }
+    })
+
+
+    function tabla($estado){
+        tblProductos.destroy();
+        tblProductos=$('#tblProductos').DataTable({
+            ajax: {
+                url: base_url + 'productos/listar/'+$estado,
+                dataSrc: ''
+            },
+            columns: [
+                { data: 'codigo' },
+                { data: 'producto' },
+                { data: 'marca' },
+                { data: 'modelo' },
+                { data: 'ganancia' },
+                { data: 'categoria' },
+                { data: 'descripcion' },
+                { data: 'imagen' },
+                { data: 'acciones' }
+            ],
+            language: {
+                url: base_url + 'assets/js/espanol.json'
+            },
+            dom,
+            buttons,
+            responsive: true,
+            order: [[0, 'asc']],
+        });
+    
+    }
+
     //vista Previa
     foto.addEventListener('change', function (e) {
         foto_actual.value = '';
@@ -71,17 +119,21 @@ document.addEventListener('DOMContentLoaded', function () {
     formulario.addEventListener('submit', function (e) {
         e.preventDefault();
         limpiarCampos();
+
         if (codigo.value == '') {
             errorCodigo.textContent = 'EL CODIGO ES REQUERIDO';
-        } else if (nombre.value == '') {
-            errorNombre.textContent = 'EL NOMBRE ES REQUERIDO';
-        } else if (precio_compra.value == '') {
-            errorCompra.textContent = 'EL PRECIO COMPRA ES REQUERIDO';
-        } else if (precio_venta.value == '') {
-            errorVenta.textContent = 'EL PRECIO VENTA ES REQUERIDO';
+
+        } else if (producto.value == '') {
+            errorPrucducto.textContent = 'EL NOMBRE DE PRODCUCTO ES REQUERIDO';
+        } else if (marca.value == '') {
+            errorMarca.textContent = 'LA MARCA ES REQUERIDA';
+        } else if (modelo.value == '') {
+            errorModelo.textContent = 'EL MODELO ES REQUERIDO';
         } else if (id_categoria.value == '') {
             errorCategoria.textContent = 'SELECCIONA LA CATEGORIA';
-        } else {
+        } else if(ganancia.value == ''){
+            errorGanancia.textContent = 'LA GANANCIA ES REQUERIDA';
+        }else {
             const url = base_url + 'productos/registrar';
             insertarRegistros(url, this, tblProductos, btnAccion, false);
             limpiarCampos()
@@ -98,12 +150,20 @@ function deleteImg() {
 function eliminarProducto(idProducto) {
     const url = base_url + 'productos/eliminar/' + idProducto;
     eliminarRegistros(url, tblProductos);
+
+    
+}
+// Sirve para reactivar el producto
+function activarProducto(idProducto) {
+    const url = base_url + 'productos/activar/' + idProducto;
+    activarRegistros(url, tblProductos);
+    
 }
 
 function editarProducto(idProducto) {
     limpiarCampos();
     const url = base_url + 'productos/editar/' + idProducto;
-    //hacer una instancia del objeto XMLHttpRequest 
+    //hacer una instancia del objeto XMLHttpRequest
     const http = new XMLHttpRequest();
     //Abrir una Conexion - POST - GET
     http.open('GET', url, true);
@@ -115,11 +175,13 @@ function editarProducto(idProducto) {
             const res = JSON.parse(this.responseText);
             id.value = res.id;
             codigo.value = res.codigo;
-            nombre.value = res.descripcion;
-            precio_compra.value = res.precio_compra;
-            precio_venta.value = res.precio_venta;
+            producto.value = res.producto;
+            marca.value = res.marca;
+            modelo.value = res.modelo;
+            ganancia.value = res.ganancia;
             id_categoria.value = res.id_categoria;
             foto_actual.value = res.foto;
+            descripcion.value = res.descripcion;
             containerPreview.innerHTML = `<img class="img-thumbnail" src="${base_url + res.foto}" width="200">
             <button class="btn btn-danger" type="button" onclick="deleteImg()"><i class="fas fa-trash"></i></button>`;
             btnAccion.textContent = 'Actualizar';
@@ -130,9 +192,31 @@ function editarProducto(idProducto) {
 
 function limpiarCampos() {
     errorCodigo.textContent = '';
-    errorNombre.textContent = '';
-    errorCompra.textContent = '';
-    errorVenta.textContent = '';
+    errorProducto.textContent = '';
+    errorMarca.textContent = '';
+    errorModelo.textContent = '';
+    errorGanancia.textContent = '';
     errorCategoria.textContent = '';
     containerPreview.innerHTML = '';
+    errorDescripcion.textContent = '';
 }
+
+// ---- Validacion de Campos de tipo numericos ---- //
+function soloNumeros(e) {
+    var key = e.keyCode || e.which,
+      tecla = String.fromCharCode(key).toLowerCase(),
+      numeros = "0123456789",
+      especiales = [8, 37, 39, 46],
+      tecla_especial = false;
+  
+    for (var i in especiales) {
+      if (key == especiales[i]) {
+        tecla_especial = true;
+        break;
+      }
+    }
+  
+    if (numeros.indexOf(tecla) == -1 && !tecla_especial) {
+      return false;
+    }
+  };

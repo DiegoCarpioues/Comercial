@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', function(){
     //cargar datos con el plugin datatables
     tblProveedores = $('#tblProveedores').DataTable({
         ajax: {
+
+
             url: base_url + 'proveedor/listar',
             dataSrc: ''
         },
@@ -89,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function(){
             insertarRegistros(url, this, tblProveedores, btnAccion, false);
             editorDireccion.setData('');
         }
-        
+
     })
 })
 
@@ -101,7 +103,7 @@ function eliminarProveedor(idProveedor){
 function editarProveedor(idProveedor) {
     limpiarCampos();
     const url = base_url + 'proveedor/editar/' + idProveedor;
-    //hacer una instancia del objeto XMLHttpRequest 
+    //hacer una instancia del objeto XMLHttpRequest
     const http = new XMLHttpRequest();
     //Abrir una Conexion - POST - GET
     http.open('GET', url, true);

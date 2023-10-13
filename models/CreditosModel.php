@@ -5,7 +5,34 @@ class CreditosModel extends Query{
     }
     public function getCreditos()
     {
-        $sql = "SELECT cr.*, cl.nombre FROM creditos cr INNER JOIN ventas v ON cr.id_venta = v.id INNER JOIN clientes cl ON v.id_cliente = cl.id";
+        $sql = "SELECT
+        c.id as id_credito,
+		v.id as id_venta,
+        v.fecha,
+        cl.nombre,
+        cl.telefono,
+        cl.direccion,
+        v.serie as venta,
+        c.total,
+        c.cuota,
+        c.meses_plazo as cuotas_totales,
+        (SELECT COUNT(*) FROM abonos as ab where ab.id_credito=c.id) as cuotas_pagadas,
+        ((SELECT COUNT(*) FROM abonos as ab where ab.id_credito=c.id)* c.cuota + c.prima) as total_abonado,
+        (c.total - ((SELECT COUNT(*) FROM abonos as ab where ab.id_credito=c.id)* c.cuota + c.prima)) as total_restante,
+    CASE
+    WHEN c.estado = 1 THEN 'Activo'
+    WHEN c.estado = 0 THEN 'Inactivo'
+END as estado
+FROM
+ventas as v
+INNER JOIN
+clientes as cl
+ON 
+    v.id_cliente = cl.id
+INNER JOIN
+creditos as c
+ON 
+    v.id = c.id_venta ORDER BY v.fecha ASC";
         return $this->selectAll($sql);
     }
     public function getAbono($idCredito)
@@ -14,21 +41,64 @@ class CreditosModel extends Query{
         return $this->select($sql);
     }
 
-    public function buscarPorNombre($valor)
+    public function VerificarCreditoFinalizado($id)
     {
-        $sql = "SELECT cr.*, cl.nombre, cl.telefono, cl.direccion FROM creditos cr INNER JOIN ventas v ON cr.id_venta = v.id INNER JOIN clientes cl ON v.id_cliente = cl.id WHERE cl.nombre LIKE '%".$valor."%' AND cr.estado = 1 LIMIT 10";
+        $sql = "SELECT * FROM creditos as c INNER JOIN abonos as a ON c.id = a.id_credito WHERE a.numero=c.meses_plazo AND c.id='".$id."' ";
         return $this->selectAll($sql);
     }
 
-    public function registrarAbono($monto, $idCredito, $id_usuario)
+    public function finalizaCredito($estado, $idCredito)
     {
-        $sql = "INSERT INTO abonos (abono, id_credito, id_usuario) VALUES (?,?,?)";
-        $array = array($monto, $idCredito, $id_usuario);
+        $sql = "UPDATE creditos SET estado = ? WHERE id = ?";
+        $array = array($estado, $idCredito);
+        return $this->save($sql, $array);
+    }
+
+    public function finalizaVenta($estado, $idVenta)
+    {
+        $sql = "UPDATE ventas SET estado = ? WHERE id = ?";
+        $array = array($estado, $idVenta);
+        return $this->save($sql, $array);
+    }
+
+    public function registrarAbono($numero, $abono,$fecha,$mora,$apertura, $id_credito)
+    {
+        $sql = "INSERT INTO abonos (numero, abono, fecha, mora, apertura,id_credito) VALUES (?,?,?,?,?,?)";
+        $array = array($numero, $abono,$fecha, $mora,$apertura, $id_credito);
         return $this->insertar($sql, $array);
     }
     public function getCredito($idCredito)
     {
-        $sql = "SELECT cr.*, v.productos, cl.num_identidad, cl.nombre, cl.telefono, cl.direccion FROM creditos cr INNER JOIN ventas v ON cr.id_venta = v.id INNER JOIN clientes cl ON v.id_cliente = cl.id WHERE cr.id = $idCredito";
+        $sql = "SELECT
+        c.id as id_credito,
+		v.id as id_venta,
+        v.fecha,
+	    cl.num_identidad,
+        cl.nombre,
+        cl.telefono,
+        cl.direccion,
+        cl.correo,
+        v.serie as venta,
+        c.cuota,
+        c.total,
+        c.meses_plazo as cuotas_totales,
+        (SELECT COUNT(*) FROM abonos as ab where ab.id_credito=c.id) as cuotas_pagadas,
+        ((SELECT COUNT(*) FROM abonos as ab where ab.id_credito=c.id)* c.cuota + c.prima) as total_abonado,
+        (c.total - ((SELECT COUNT(*) FROM abonos as ab where ab.id_credito=c.id)* c.cuota + c.prima)) as total_restante,
+    CASE
+    WHEN c.estado = 1 THEN 'Activo'
+    WHEN c.estado = 0 THEN 'Inactivo'
+END as estado
+FROM
+ventas as v
+INNER JOIN
+clientes as cl
+ON 
+    v.id_cliente = cl.id
+INNER JOIN
+creditos as c
+ON 
+    v.id = c.id_venta  WHERE c.id= $idCredito";
         return $this->select($sql);
     }
 
@@ -41,7 +111,13 @@ class CreditosModel extends Query{
 
     public function getAbonos($idCredito)
     {
-        $sql = "SELECT * FROM abonos WHERE id_credito = $idCredito";
+        $sql = "SELECT
+        ab.*,
+        CASE
+            WHEN mora = TRUE THEN c.cuota * 0.05
+            ELSE 0
+        END AS mora_calculada
+    FROM abonos as ab, creditos as c WHERE   ab.id_credito =c.id AND id_credito= $idCredito ORDER BY numero ASC";
         return $this->selectAll($sql);
     }
 
@@ -50,6 +126,30 @@ class CreditosModel extends Query{
         $sql = "SELECT * FROM abonos";
         return $this->selectAll($sql);
     }
+
+    public function getProductos($idVenta)
+    {
+        $sql = "SELECT
+        p.*,
+        de.cantidad
+        
+    FROM
+        ventas as v
+        INNER JOIN
+        detalle_venta as de
+        ON 
+            v.id = de.id_venta
+        INNER JOIN
+        compras as c
+        ON 
+            de.id_compra = c.id
+        INNER JOIN
+        productos as p
+        ON 
+            c.id_productos = p.id  WHERE v.id= $idVenta";
+        return $this->selectAll($sql);
+    }
+    
 
     //public function getEmpresa()
     //{

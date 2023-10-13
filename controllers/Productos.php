@@ -29,28 +29,44 @@ class Productos extends Controller
         $data['categorias'] = $this->model->getDatos('categorias');
         $this->views->getView('productos', 'index', $data);
     }
-    public function listar()
+    public function listar($estado)
     {
-        $data = $this->model->getProductos(1);
+        
+        $data = $this->model->getProductos($estado);
         for ($i = 0; $i < count($data); $i++) {
             $foto = ($data[$i]['foto'] == null) ? 'assets/images/productos/default.png' :  $data[$i]['foto'];
             $data[$i]['imagen'] = '<img class="img-thumbnail" src="' . BASE_URL . $foto . '" width="50">';
-            $data[$i]['acciones'] = '<div>
-            <button class="btn btn-danger" type="button" onclick="eliminarProducto(' . $data[$i]['id'] . ')"><i class="fas fa-trash"></i></button>
-            <button class="btn btn-info" type="button" onclick="editarProducto(' . $data[$i]['id'] . ')"><i class="fas fa-edit"></i></button>
-            </div>';
+            
+            if($data[$i]['estado']==1){
+                $data[$i]['acciones'] = '<div>
+                <button class="btn btn-danger" type="button" onclick="eliminarProducto(' . $data[$i]['id'] . ')"><i class="fas fa-trash"></i></button>
+                <button class="btn btn-info" type="button" onclick="editarProducto(' . $data[$i]['id'] . ')"><i class="fas fa-edit"></i></button>
+                </div>';
+            }else{
+                $data[$i]['acciones'] = '<div>
+                <button class="btn btn-success" type="button" onclick="activarProducto(' . $data[$i]['id'] . ')"><i class="fas fa-trash"></i></button>
+                <button class="btn btn-info" type="button" onclick="editarProducto(' . $data[$i]['id'] . ')"><i class="fas fa-edit"></i></button>
+                </div>';
+            }
+            
         }
+    
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
         die();
     }
+
+ 
+
     public function registrar()
     {
-        if (isset($_POST['codigo']) && isset($_POST['nombre'])) {
+        if (isset($_POST['codigo']) && isset($_POST['producto'])) {
             $id = strClean($_POST['id']);
             $codigo = strClean($_POST['codigo']);
-            $nombre = strClean($_POST['nombre']);
-            $precio_compra = strClean($_POST['precio_compra']);
-            $precio_venta = strClean($_POST['precio_venta']);
+            $producto = strClean($_POST['producto']);
+            $marca = strClean($_POST['marca']);
+            $modelo = strClean($_POST['modelo']);
+            $ganancia = strClean($_POST['ganancia']);
+            $descripcion = strClean($_POST['descripcion']);
             $id_categoria = strClean($_POST['id_categoria']);
             $fotoActual = strClean($_POST['foto_actual']);
             $foto = $_FILES['foto'];
@@ -66,12 +82,14 @@ class Productos extends Controller
             }
             if (empty($codigo)) {
                 $res = array('msg' => 'EL CODIGO ES REQUERIDO', 'type' => 'warning');
-            } else if (empty($nombre)) {
-                $res = array('msg' => 'EL NOMBRE ES REQUERIDO', 'type' => 'warning');
-            } else if (empty($precio_compra)) {
-                $res = array('msg' => 'EL PRECIO COMPRA ES REQUERIDO', 'type' => 'warning');
-            } else if (empty($precio_venta)) {
-                $res = array('msg' => 'EL PRECIO VENTA ES REQUERIDO', 'type' => 'warning');
+            } else if (empty($producto)) {
+                $res = array('msg' => 'EL PRODCUTO ES REQUERIDO', 'type' => 'warning');
+            } else if (empty($marca)) {
+                $res = array('msg' => 'LA MARCA ES REQUERIDA', 'type' => 'warning');
+            } else  if (empty($ganancia)){
+                $res = array('msg' => 'LA GANANCIA ES REQUERIDA', 'type' => 'warning');
+            }else if (empty($modelo)) {
+                $res = array('msg' => 'EL MODELO ES REQUERIDO', 'type' => 'warning');
             } else if (empty($id_categoria)) {
                 $res = array('msg' => 'LA CATEGORIA ES REQUERIDO', 'type' => 'warning');
             } else {
@@ -80,9 +98,11 @@ class Productos extends Controller
                     if (empty($verificar)) {
                         $data = $this->model->registrar(
                             $codigo,
-                            $nombre,
-                            $precio_compra,
-                            $precio_venta,
+                            $producto,
+                            $marca,
+                            $modelo,
+                            $ganancia,
+                            $descripcion,
                             $id_categoria,
                             $destino
                         );
@@ -105,9 +125,11 @@ class Productos extends Controller
                         $imgTemp = ($temp['foto'] != null) ? $temp['foto'] : 'default.png';
                         $data = $this->model->actualizar(
                             $codigo,
-                            $nombre,
-                            $precio_compra,
-                            $precio_venta,
+                            $producto,
+                            $marca,
+                            $modelo,
+                            $ganancia,
+                            $descripcion,
                             $id_categoria,
                             $destino,
                             $id
@@ -141,6 +163,23 @@ class Productos extends Controller
             $data = $this->model->eliminar(0, $idProducto);
             if ($data == 1) {
                 $res = array('msg' => 'PRODUCTO DADO DE BAJA', 'type' => 'success');
+            } else {
+                $res = array('msg' => 'ERROR AL ELIMINAR', 'type' => 'error');
+            }
+        } else {
+            $res = array('msg' => 'ERROR DESCONOCIDO', 'type' => 'error');
+        }
+        echo json_encode($res);
+        die();
+    }
+
+
+    public function activar($idProducto)
+    {
+        if (isset($_GET) && is_numeric($idProducto)) {
+            $data = $this->model->eliminar(1, $idProducto);
+            if ($data == 1) {
+                $res = array('msg' => 'PRODUCTO DADO DE ALTA', 'type' => 'success');
             } else {
                 $res = array('msg' => 'ERROR AL ELIMINAR', 'type' => 'error');
             }
@@ -195,18 +234,22 @@ class Productos extends Controller
     }
 
     //buscar Productos por codigo
-    public function buscarPorCodigo($valor)
+    public function buscarPorCodigo()
     {
-        $array = array('estado' => false, 'datos' => '');
+        $array = array();
+        $valor = $_GET['term'];
+        $array = array();
         $data = $this->model->buscarPorCodigo($valor);
-        if (!empty($data)) {
-            $array['estado'] = true;
-            $array['datos'] = $data;
+        foreach ($data as $row) {
+            $result['id'] = $row['id'];
+            $result['label'] = $row['codigo'];
+            $result['producto'] = $row['producto'];
+            array_push($array, $result);
         }
         echo json_encode($array, JSON_UNESCAPED_UNICODE);
         die();
     }
-    //buscar Productos por nombre
+    //buscar Productos por nombre  
     public function buscarPorNombre()
     {
         $array = array();
@@ -214,10 +257,11 @@ class Productos extends Controller
         $data = $this->model->buscarPorNombre($valor);
         foreach ($data as $row) {
             $result['id'] = $row['id'];
-            $result['label'] = $row['descripcion'];
-            $result['stock'] = $row['cantidad'];
+            $result['label'] = $row['producto'];
+            //$result['precio'] = $row['precio'];
+/*             $result['stock'] = $row['cantidad'];
             $result['precio_venta'] = $row['precio_venta'];
-            $result['precio_compra'] = $row['precio_compra'];
+            $result['precio_compra'] = $row['precio_compra'];  */
             array_push($array, $result);
         }
         echo json_encode($array, JSON_UNESCAPED_UNICODE);
@@ -356,4 +400,19 @@ class Productos extends Controller
         // Output the generated PDF to Browser
         $dompdf->stream('reporte.pdf', array('Attachment' => false));
     }
+
+   /*  public function buscarProdNombreVenta()
+    {
+        $array = array();
+        $valor = $_GET['term'];
+        $data = $this->model->buscarProdDispVentas($valor);
+        foreach ($data as $row) {
+            $result['id'] = $row['id'];
+            $result['label'] = $row['producto'];
+            //$result['precio'] = $row['precio'];
+            array_push($array, $result);
+        }
+        echo json_encode($array, JSON_UNESCAPED_UNICODE);
+        die();
+    } */
 }
