@@ -63,14 +63,14 @@
             <tr>
                 <th>Cantidad</th>
                 <th>Descripción</th>
-                <th>Precio</th>
+                <th><?php echo($data['venta']['metodo'] == 'CONTADO'? 'Precio': 'Prima');?></th>
                 <th>SubTotal</th>
             </tr>
         </thead>
         <tbody>
             <?php
             $subTotal = 0;
-
+        if($data['venta']['metodo'] == 'CONTADO'){
             foreach ($data['detalle_venta'] as $detalle) {
                 ?>
                     <tr>
@@ -82,7 +82,6 @@
                 <?php
                 $subTotal += $detalle['total'];
             }
-
             $igv = $subTotal * 0.13;//calculando el IVA
             $total = $subTotal + $igv;
             $totalSD = $total;
@@ -109,6 +108,28 @@
                 <td class="text-right" colspan="3">Total con descuento $</td>
                 <td class="text-right"><?php echo number_format($totalCD, 2); ?></td>
             </tr>
+            <?php
+        }else{
+            foreach ($data['detalle_venta'] as $detalle) {
+                ?>
+                    <tr>
+                        <td><?php echo $detalle['cantidad']; ?></td>
+                        <td><?php echo $detalle['descripcion']; ?></td>
+                        <td><?php echo number_format($detalle['precio'], 2); ?></td>
+                        <td><?php echo number_format($detalle['total'], 2); ?></td>
+                    </tr>
+                <?php
+                $subTotal = $detalle['total'];
+                }
+            $subTotal = $subTotal;
+            ?>
+            <tr class="total">
+                <td class="text-right" colspan="3">Prima $</td>
+                <td class="text-right"><?php echo number_format($subTotal, 2); ?></td>
+            </tr>
+            <?php
+        }
+            ?>
         </tbody>
     </table>
     <div class="mensaje">

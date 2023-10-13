@@ -33,58 +33,78 @@
             <tr>
                 <th>Cant</th>
                 <th>Descripción</th>
-                <th>Precio</th>
+                <th><?php echo($data['venta']['metodo'] == 'CONTADO'? 'Precio': 'Prima');?></th>
                 <th>SubTotal</th>
             </tr>
         </thead>
         <tbody>
             <?php
             $subTotal = 0;
-            
-            foreach ($data['detalle_venta'] as $detalle) {
-                $preConIVA = ($detalle['precio'] + ($detalle['precio'] * 0.13));
+            if($data['venta']['metodo'] == 'CONTADO'){
+                foreach ($data['detalle_venta'] as $detalle) {
+                    $preConIVA = ($detalle['precio'] + ($detalle['precio'] * 0.13));
+                    ?>
+                        <tr>
+                            <td><?php echo $detalle['cantidad']; ?></td>
+                            <td><?php echo $detalle['descripcion']; ?></td>
+                            <td><?php echo number_format($preConIVA, 2); ?></td>
+                            <td><?php echo number_format($detalle['cantidad']*$preConIVA, 2); ?></td>
+                        </tr>
+                    <?php
+                    $subTotal += $detalle['cantidad']*$preConIVA;
+                }
+                $igv = $subTotal * 0.13;//calculando el IVA
+                $total = $subTotal ;
+                $totalSD = $total;
+                $totalCD = $totalSD - ($totalSD * ($data['venta']['descuento']/100));
+                $cambio = $data['venta']['pago'] - $totalCD;
                 ?>
-                    <tr>
-                        <td><?php echo $detalle['cantidad']; ?></td>
-                        <td><?php echo $detalle['descripcion']; ?></td>
-                        <td><?php echo number_format($preConIVA, 2); ?></td>
-                        <td><?php echo number_format($detalle['cantidad']*$preConIVA, 2); ?></td>
-                    </tr>
-                <?php
-                $subTotal += $detalle['cantidad']*$preConIVA;
-            }
-            $igv = $subTotal * 0.13;//calculando el IVA
-            $total = $subTotal ;
-            $totalSD = $total;
-            $totalCD = $totalSD - ($totalSD * ($data['venta']['descuento']/100));
-            $cambio = $data['venta']['pago'] - $totalCD;
+                <tr class="total">
+                    <td class="text-right" colspan="3">SubTotal</td>
+                    <td class="text-right"><?php echo number_format($subTotal, 2); ?></td>
+                </tr>
+                <tr>
+                    <td class="text-right" colspan="3">Descuento %</td>
+                    <td class="text-right"><?php echo number_format($data['venta']['descuento'], 2); ?></td>
+                </tr>
+                <tr>
+                    <td class="text-right" colspan="3">Total sin descuento $</td>
+                    <td class="text-right"><?php echo number_format($totalSD,2); ?></td>
+                </tr>
+                <tr>
+                    <td class="text-right" colspan="3">Total con descuento $</td>
+                    <td class="text-right"><?php echo number_format($totalCD, 2); ?></td>
+                </tr>
+
+                <tr>
+                    <td class="text-right" colspan="3">Pago con $</td>
+                    <td class="text-right"><?php echo number_format($data['venta']['pago'], 2); ?></td>
+                </tr>
+                <tr>
+                    <td class="text-right" colspan="3">Cambio $</td>
+                    <td class="text-right"><?php echo number_format($cambio, 2); ?></td>
+                </tr>
+            <?php
+        }else{
+            foreach ($data['detalle_venta'] as $detalle) {
             ?>
-            <tr class="total">
-                <td class="text-right" colspan="3">SubTotal</td>
+                <tr>
+                    <td><?php echo $detalle['cantidad']; ?></td>
+                    <td><?php echo $detalle['descripcion']; ?></td>
+                    <td><?php echo number_format($detalle['precio'], 2); ?></td>
+                    <td><?php echo number_format($detalle['total'], 2); ?></td>
+                </tr>
+            <?php
+            $subTotal = $detalle['total'];
+        }
+            $subTotal = $subTotal;
+            ?>
+            <tr>
+                <td class="text-right" colspan="3">Prima $</td>
                 <td class="text-right"><?php echo number_format($subTotal, 2); ?></td>
             </tr>
-            <tr>
-                <td class="text-right" colspan="3">Descuento %</td>
-                <td class="text-right"><?php echo number_format($data['venta']['descuento'], 2); ?></td>
-            </tr>
-            <tr>
-                <td class="text-right" colspan="3">Total sin descuento $</td>
-                <td class="text-right"><?php echo number_format($totalSD,2); ?></td>
-            </tr>
-            <tr>
-                <td class="text-right" colspan="3">Total con descuento $</td>
-                <td class="text-right"><?php echo number_format($totalCD, 2); ?></td>
-            </tr>
-
-            <tr>
-                <td class="text-right" colspan="3">Pago con $</td>
-                <td class="text-right"><?php echo number_format($data['venta']['pago'], 2); ?></td>
-            </tr>
-            <tr>
-                <td class="text-right" colspan="3">Cambio $</td>
-                <td class="text-right"><?php echo number_format($cambio, 2); ?></td>
-            </tr>
-
+            <?php
+        }?>
         </tbody>
     </table>
     <div class="mensaje">

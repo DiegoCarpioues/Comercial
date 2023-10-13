@@ -230,6 +230,7 @@ class VentasModel extends Query{
     {
         //$sql = "SELECT v.*, c.num_identidad, c.nombre, c.telefono, c.correo, c.direccion FROM ventas v INNER JOIN clientes c ON v.id_cliente = c.id WHERE v.id = $idVenta";
         $sql = " SELECT
+        ventas.id AS idventa,
         productos.producto,
         productos.codigo,
         productos.descripcion, 
@@ -262,6 +263,22 @@ class VentasModel extends Query{
         WHERE ventas.id = '".$idVenta."'
         GROUP BY detalle_venta.id ; 
             ";
+        return $this->selectAll($sql);
+    }
+
+    public function obtenerCredito($idVenta){
+        $sql = " 
+        SELECT
+            creditos.*
+        FROM
+            creditos
+            INNER JOIN
+            ventas
+            ON 
+                creditos.id_venta = ventas.id
+        WHERE 
+		    ventas.id = '".$idVenta."'
+        ";
         return $this->selectAll($sql);
     }
 
