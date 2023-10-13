@@ -170,14 +170,27 @@ class Ventas extends Controller
        // $data['empresa'] = $this->model->getEmpresa();
         $data['venta'] = $this->model->getVenta($idVenta);
         
+        
         $dat = $this->model->getDetalleVenta($idVenta);
+        $contador = 0;
         foreach ($dat as $row) {
-            $data2 = $this->model->buscarProdDispVentas($row['codigo']);
-            $precioProd = $data2[0]['precio'];
-            $result['cantidad'] = $row['cantidad'];
-            $result['descripcion'] = $row['descripcion'];
-            $result['precio'] = $precioProd;
-            $result['total'] = $row['cantidad'] * $precioProd;
+            if($data['venta']['metodo'] == 'CONTADO'){   
+                $data2 = $this->model->buscarProdDispVentas($row['codigo']);
+                $precioProd = $data2[0]['precio'];
+                $result['cantidad'] = $row['cantidad'];
+                $result['descripcion'] = $row['descripcion'];
+                $result['precio'] = $precioProd;
+                $result['total'] = $row['cantidad'] * $precioProd;
+            }else{//mandar la prima en el subtotal
+                if($contador <= 0){
+                    $data2 = $this->model->obtenerCredito($row['idventa']);
+                    $result['cantidad'] = 1;
+                    $result['descripcion'] = $row['descripcion'];
+                    $result['precio'] = $data2[0]['prima'];
+                    $result['total'] = $data2[0]['prima'];
+                    $contador ++;
+                }
+            }
             array_push($arrayDetProd, $result);
         }
 
@@ -395,13 +408,26 @@ class Ventas extends Controller
         $arrayDetProd = array();
 
         $dat = $this->model->getDetalleVenta($idVenta);
+        $data['venta'] = $this->model->getVenta($idVenta);
+        $contador = 0;
         foreach ($dat as $row) {
-            $data2 = $this->model->buscarProdDispVentas($row['codigo']);
-            $precioProd = $data2[0]['precio'];
-            $result['cantidad'] = $row['cantidad'];
-            $result['descripcion'] = $row['descripcion'];
-            $result['precio'] = $precioProd;
-            $result['total'] = $row['cantidad'] * $precioProd;
+            if($data['venta']['metodo'] == 'CONTADO'){
+                $data2 = $this->model->buscarProdDispVentas($row['codigo']);
+                $precioProd = $data2[0]['precio'];
+                $result['cantidad'] = $row['cantidad'];
+                $result['descripcion'] = $row['descripcion'];
+                $result['precio'] = $precioProd;
+                $result['total'] = $row['cantidad'] * $precioProd;
+            }else{//mandar la prima en el subtotal
+                if($contador <= 0){
+                    $data2 = $this->model->obtenerCredito($row['idventa']);
+                    $result['cantidad'] = 1;
+                    $result['descripcion'] = $row['descripcion'];
+                    $result['precio'] = $data2[0]['prima'];
+                    $result['total'] = $data2[0]['prima'];
+                    $contador ++;
+                }
+            }
             array_push($arrayDetProd, $result);
         }
 
