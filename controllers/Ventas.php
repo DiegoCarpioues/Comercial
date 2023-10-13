@@ -140,6 +140,7 @@ class Ventas extends Controller
                             }
                         }
                         if ($metodo == 'CREDITO') {
+                            $totalAPagar = ($mesesPlazo * $cuotaMensual) + $prima;
                             $this->model->registrarCredito($idVenta, $prima, $mesesPlazo, $interesMensual, 1, $totalAPagar, $cuotaMensual);
                         }
                        // if ($datos['impresion']) {
