@@ -42,7 +42,22 @@ class AdminModel extends Query{
 
     public function nuevosProductos($cantidad)
     {
-        $sql = "SELECT p.*, c.categoria FROM productos p INNER JOIN categorias c ON p.id_categoria = c.id ORDER BY p.id DESC LIMIT $cantidad";
+        $sql = "SELECT
+        p.*, 
+        co.fecha,
+        co.precio as precio_compra, 
+        (p.ganancia*(co.precio/100)) + co.precio as precio_venta,
+        c.categoria
+    FROM
+        productos as p
+        INNER JOIN
+        categorias as c
+        ON 
+            p.id_categoria = c.id
+        INNER JOIN
+        compras as co
+        ON 
+            p.id = co.id_productos LIMIT $cantidad";
         return $this->selectAll($sql);
     }
 

@@ -75,7 +75,7 @@ class Cajas extends Controller
         $consultaCreditos = $this->model->getAbonos($this->id_usuario);
         $creditos = ($consultaCreditos['total'] != null) ? $consultaCreditos['total'] : 0;
 
-        $consultaCompras = $this->model->getCompras($this->id_usuario);
+        $consultaCompras = 100;
         $compras = ($consultaCompras['total'] != null) ? $consultaCompras['total'] : 0;
 
 
@@ -121,18 +121,19 @@ class Cajas extends Controller
 
     public function cerrarCaja()
     {
-        $data = $this->getDatos();
-        $ventas = $this->model->getTotalVentas($this->id_usuario);
+        //$data = $this->getDatos();
+        //$ventas = $this->model->getTotalVentas($this->id_usuario);
+        date_default_timezone_set('America/El_Salvador');
         $fecha_cierre = date('Y-m-d');
-        $montoFinal = $data['ingresos'];
-        $totalVentas = $ventas['total'];
-        $egresos = $data['egresos'];
-        $result = $this->model->cerrarCaja($fecha_cierre, $montoFinal, $totalVentas, $egresos, $this->id_usuario);
+        $montoFinal = 100;
+        $totalVentas = $this->model->getTotalVentas($this->id_usuario, $fecha_cierre);;
+        $egresos =$this->model->getCompra($this->id_usuario, $fecha_cierre);
+        $result = $this->model->cerrarCaja($fecha_cierre, $montoFinal, $totalVentas['venta_total'], $egresos['ingresos'], $this->id_usuario);
         if ($result == 1) {
-            $this->model->actualizarApertura('compras', $this->id_usuario);
+/*             $this->model->actualizarApertura('compras', $this->id_usuario);
             $this->model->actualizarApertura('ventas', $this->id_usuario);
             $this->model->actualizarApertura('abonos', $this->id_usuario);
-            $this->model->actualizarApertura('detalle_apartado', $this->id_usuario);
+            $this->model->actualizarApertura('detalle_apartado', $this->id_usuario); */
             $res = array('msg' => 'CAJA CERRADO', 'type' => 'success');
         }else{
             $res = array('msg' => 'ERROR AL CERRAR LA CAJA', 'type' => 'error');

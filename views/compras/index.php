@@ -1,4 +1,9 @@
-<?php include_once 'views/templates/header.php'; ?>
+<?php include_once 'views/templates/header.php';
+
+$bandera =true;
+
+if($bandera){
+?>
 
 <div class="card">
     <div class="card-body">
@@ -136,4 +141,10 @@
     </div>
 </div>
 
-<?php include_once 'views/templates/footer.php'; ?>
+<?php include_once 'views/templates/footer.php';
+}else{
+?>
+    <span>Caja cerrada</span>
+<?php 
+include_once 'views/templates/footer.php';
+}?>

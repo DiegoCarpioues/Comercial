@@ -317,7 +317,7 @@ document.addEventListener('DOMContentLoaded', function(){
     fechaActual.setDate(fechaActual.getDate() - 1);
     fecha.value=fechaActual.toISOString().slice(0, 10);;
     cuota.value = data.cuota;
-    fechaActual=new Date('2023-12-29');
+    //fechaActual=new Date('2023-12-26');
     //Calcular mora enviandole la fecha actual, de venta y el numero de cuota que se va cancelar
     this.calcularMora(fechaActual,data.fecha,(data.cuotas_pagadas +1),data.cuota);
     

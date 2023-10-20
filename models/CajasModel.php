@@ -39,15 +39,22 @@ class CajasModel extends Query
         $sql = "SELECT SUM(a.abono) AS total FROM abonos a INNER JOIN creditos c ON a.id_credito = c.id INNER JOIN ventas v ON c.id_venta = v.id WHERE a.apertura = 1 AND v.id_usuario = $id_usuario";
         return $this->select($sql);
     }
-    public function getCompras($id_usuario)
+    public function getCompra($id_usuario, $fecha_compra)
     {
-        $sql = "SELECT SUM(total) AS total FROM compras WHERE estado = 1 AND apertura = 1 AND id_usuario = $id_usuario";
+        $sql = "SELECT SUM(c.precio * c.cantidad) AS ingresos FROM compras as c WHERE c.id_usuario = $id_usuario AND c.fecha = '$fecha_compra'";
         return $this->select($sql);
     }
     
-    public function getTotalVentas($id_usuario)
+    public function getTotalVentas($id_usuario, $fecha)
     {
-        $sql = "SELECT COUNT(*) AS total FROM ventas WHERE apertura = 1 AND id_usuario = $id_usuario";
+        $sql = "SELECT
+        COUNT(*) AS venta_total
+        FROM
+        ventas as v
+        INNER JOIN
+        detalle_venta as d
+        ON 
+            v.id = d.id_venta WHERE v.id_usuario=$id_usuario AND v.fecha='$fecha'";
         return $this->select($sql);
     }
 
