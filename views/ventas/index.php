@@ -112,6 +112,15 @@
                             <input class="form-control" type="text" id="totalPagar" value="0.00" placeholder="Total Pagar" disabled>
                             <input class="form-control" type="hidden" id="totalPagarHidden" >
                         </div>
+                        <div class="esContado">
+                            <div class="form-group mb-2">
+                                <label for="idtransaccion">Transacción</label>
+                                <select id="idtransaccion" class="form-control">
+                                    <option value="VENTA">VENTA</option>
+                                    <option value="APARTADO">APARTADO</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="esCredito">
                             <label>Prima</label>
                             <div class="input-group mb-2">
@@ -129,6 +138,13 @@
                             </select>
                         </div>
                         <div class="esContado">
+                            <div class="transaccion">
+                                <label>Apartado $</label>
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                    <input class="form-control" type="number" id="apartado" placeholder="0.00">
+                                </div>
+                            </div>
                             <label>Pago</label>
                             <div class="input-group mb-2">
                                 <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>

@@ -20,8 +20,9 @@ class CreditosModel extends Query{
         ((SELECT COUNT(*) FROM abonos as ab where ab.id_credito=c.id)* c.cuota + c.prima) as total_abonado,
         (c.total - ((SELECT COUNT(*) FROM abonos as ab where ab.id_credito=c.id)* c.cuota + c.prima)) as total_restante,
     CASE
-    WHEN c.estado = 1 THEN 'Activo'
     WHEN c.estado = 0 THEN 'Inactivo'
+    WHEN c.estado = 1 THEN 'Activo'
+    WHEN c.estado = 2 THEN 'Apartado'
 END as estado
 FROM
 ventas as v

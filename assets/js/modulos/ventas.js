@@ -34,9 +34,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Obtener referencia al elemento select
     var metodoPagoSelect = document.getElementById("metodo");
+    var transaccionSelect = document.getElementById("idtransaccion");
 
     // Obtener una lista de elementos con la clase deseada
     var elementosOcultarMostrar = document.querySelectorAll(".esCredito");
+    var tipoTransaccion = document.querySelectorAll(".transaccion");
 
   // Ocultar los elementos al cargar la página (por defecto)
   ocultarElementos();
@@ -46,6 +48,11 @@ document.addEventListener("DOMContentLoaded", function () {
     elementosOcultarMostrar.forEach(function (elemento) {
       elemento.style.display = "none";
     });
+
+    tipoTransaccion.forEach(function(e){
+      e.style.display = "none";
+    });
+
   }
 
   // Agregar un evento de cambio al select
@@ -74,6 +81,28 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   });
 
+
+  // Agregar un evento de cambio al select "transaccion"
+  transaccionSelect.addEventListener("change", function () {
+    var selectedValue = transaccionSelect.value;
+    var eOcult = document.querySelectorAll(".transaccion");
+
+    // Verificar si la opción seleccionada es "VENTA" y el método de pago es "CONTADO"
+    if (selectedValue === "APARTADO" && metodoPagoSelect.value === "CONTADO") {
+      // Mostrar el elemento específico
+      eOcult.forEach(function (elemento) {
+        if (selectedValue === "APARTADO") {
+          elemento.style.display = "block";
+        }
+      });
+    } else {
+      // Mostrar el elemento específico
+      eOcult.forEach(function (elemento) {
+          elemento.style.display = "none";
+      });
+    }
+  });
+
   // Obtener referencias a los elementos HTML
   var sumaTotalVentaInput = document.getElementById("sumaTotalVenta");
   var interesMensualInput = document.getElementById("interesMensual");
@@ -89,6 +118,8 @@ document.addEventListener("DOMContentLoaded", function () {
   var interesMensual = document.getElementById("interesMensual");
   var mesesPlazo = document.getElementById("mesesPlazo");
   var cuotaMensual = document.getElementById("cuotaMensual");
+  var transaccion = document.getElementById("idtransaccion");
+  var apartado = document.getElementById("apartado");
   
 
   // Agregar un evento de cambio a los campos relevantes
@@ -150,8 +181,30 @@ document.addEventListener("DOMContentLoaded", function () {
         cambioInput.value = cambio.toFixed(2); // Mostrar dos decimales
         errorPago.textContent = "";
     } else {
-        errorPago.textContent = "EL PAGO DEBE SER MAYOR AL TOTAL A PAGAR";
-        cambioInput.value = "ERROR";
+      if(pago > 0){
+        let transaccionSelect = document.getElementById("idtransaccion");
+        let apartadoSelect = document.getElementById("apartado");
+        if(transaccionSelect.value === "VENTA"){
+          errorPago.textContent = "EL PAGO DEBE SER MAYOR AL TOTAL A PAGAR";
+          $("#cambio").val("ERROR");
+        }else{
+          if(apartadoSelect.value > 0){
+            const ePago = document.querySelector("#errorPago");
+            let totalAP = parseFloat($("#apartado").val());
+            let pag = parseFloat($("#pago").val());
+            let camb = 0.00;
+            if(pag >= totalAP){
+              camb = pag - totalAP;
+   
+              $("#cambio").val(camb.toFixed(2));
+              ePago.textContent = "";
+            }else{
+              errorPago.textContent = "EL PAGO DEBE SER MAYOR AL TOTAL A PAGAR";
+              $("#cambio").val("ERROR");
+            }
+          }
+        }
+      }
     }
     if(pago == 0){
         errorPago.textContent = "";
@@ -219,7 +272,9 @@ document.addEventListener("DOMContentLoaded", function () {
           prima: prima.value,
           interesMensual: interesMensual.value,
           mesesPlazo: mesesPlazo.value,
-          cuotaMensual: cuotaMensual.value
+          cuotaMensual: cuotaMensual.value,
+          transaccion: transaccion.value,
+          apartado: apartado.value
           //impresion: impresion_directa.checked
         })
       );
@@ -503,8 +558,28 @@ function llenartablaVentas(ui) {
            errorPago.textContent = "";
        } else {
         if(pago > 0){
+          let transaccionSelect = document.getElementById("idtransaccion");
+          let apartadoSelect = document.getElementById("idapartado");
+          if(transaccionSelect.value === "VENTA"){
             errorPago.textContent = "EL PAGO DEBE SER MAYOR AL TOTAL A PAGAR";
             $("#cambio").val("ERROR");
+          }else{
+            if(apartadoSelect.value > 0){
+              const ePago = document.querySelector("#errorPago");
+              let totalAP = parseFloat($("#idapartado").val());
+              let pag = parseFloat($("#pago").val());
+              let camb = 0.00;
+              if(pag >= totalAP){
+                camb = pag - totalAP;
+     
+                $("#cambio").val(camb.toFixed(2));
+                errorPago.textContent = "";
+              }else{
+                errorPago.textContent = "EL PAGO DEBE SER MAYOR AL TOTAL A PAGAR";
+                $("#cambio").val("ERROR");
+              }
+            }
+          }
         }
        }
     }

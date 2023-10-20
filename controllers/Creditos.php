@@ -37,12 +37,16 @@ class Creditos extends Controller
             $data[$i]['total_restante']="$ ".$data[$i]['total_restante'];
             if($data[$i]['estado'] == "Activo"){
                 $data[$i]['acciones'] = '<a class="dropdown-item" href="#" id="nuevoAbono" onclick="mostrarModal(' . htmlspecialchars($data_json, ENT_QUOTES, 'UTF-8') . ')"><i class="fas fa-dollar-sign"></i> Abonos</a>';
+            }else if($data[$i]['estado'] == "Apartado"){
+                $data[$i]['acciones'] = '<a class="dropdown-item" href="#" id="nuevoAbono" onclick="mostrarModal(' . htmlspecialchars($data_json, ENT_QUOTES, 'UTF-8') . ')"><i class="fas fa-dollar-sign"></i> Abonos</a>';
             }else{
                 $data[$i]['acciones'] ='';
             }
             if ($data[$i]['estado'] == "Activo") {
                 $data[$i]['estado'] = '<span class="badge bg-warning">PENDIENTE</span>';
-            } else if($data[$i]['estado'] == 'Inactivo'){
+            } else if ($data[$i]['estado'] == "Apartado") {
+                $data[$i]['estado'] = '<span class="badge bg-info">APARTADO</span>';
+            }else if($data[$i]['estado'] == 'Inactivo'){
                 $data[$i]['estado'] = '<span class="badge bg-success">COMPLETADO</span>';
             }
             

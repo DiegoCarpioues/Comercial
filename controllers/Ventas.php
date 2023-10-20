@@ -73,7 +73,9 @@ class Ventas extends Controller
             $prima = $datos['prima'];
             $interesMensual = $datos['interesMensual'];
             $mesesPlazo = $datos['mesesPlazo'];
-            $cuotaMensual = $datos['cuotaMensual'];          
+            $cuotaMensual = $datos['cuotaMensual'];   
+            $transaccion = $datos['transaccion'];   
+            $apartado = $datos['apartado'];          
             $resultSerie = $this->model->getSerie();
             $numSerie = ($resultSerie['total'] == null) ? 1 : $resultSerie['total'] + 1;
 
@@ -92,8 +94,10 @@ class Ventas extends Controller
                 $res = array('msg' => 'EL PAGO ES REQUERIDO', 'type' => 'warning');
             } else {
 
-                    if($metodo != 'CREDITO'){//para el estado
+                    if($metodo == 'CONTADO' && $transaccion == 'VENTA' ){//para el estado
                         $venta = $this->model->registrarVenta($fecha, $hora, $metodo, $descuento, $serie[0], $pago, 1, $idCliente, $this->id_usuario);
+                    }else if( $metodo == 'CONTADO' && $transaccion == 'APARTADO' ){
+                        $venta = $this->model->registrarVenta($fecha, $hora, $metodo, $descuento, $serie[0], $pago, 2, $idCliente, $this->id_usuario);
                     }else{
                         $venta = $this->model->registrarVenta($fecha, $hora, $metodo, $descuento, $serie[0], 0.00, 0, $idCliente, $this->id_usuario);
                     }
@@ -139,7 +143,10 @@ class Ventas extends Controller
                                 }
                             }
                         }
-                        if ($metodo == 'CREDITO') {
+                        if ($metodo == 'CONTADO' && $transaccion == 'APARTADO') {
+                            $totalAPagar = $totalAPagar - $apartado;
+                            $this->model->registrarCredito($idVenta, $apartado, 1, 0, 1, $totalAPagar, $totalAPagar);
+                        }else if ($metodo == 'CREDITO') {
                             $totalAPagar = ($mesesPlazo * $cuotaMensual) + $prima;
                             $this->model->registrarCredito($idVenta, $prima, $mesesPlazo, $interesMensual, 1, $totalAPagar, $cuotaMensual);
                         }
