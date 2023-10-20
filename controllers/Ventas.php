@@ -144,8 +144,8 @@ class Ventas extends Controller
                             }
                         }
                         if ($metodo == 'CONTADO' && $transaccion == 'APARTADO') {
-                            $totalAP = $totalAPagar - $apartado;
-                            $this->model->registrarCredito($idVenta, $apartado, 1, 0, 1, $totalAP, $totalAP);
+                            $unicaCuota = $totalAPagar - $apartado;
+                            $this->model->registrarCredito($idVenta, $apartado, 1, 0, 1, $totalAPagar, $unicaCuota);
                         }else if ($metodo == 'CREDITO') {
                             $totalAPagar = ($mesesPlazo * $cuotaMensual) + $prima;
                             $this->model->registrarCredito($idVenta, $prima, $mesesPlazo, $interesMensual, 1, $totalAPagar, $cuotaMensual);
