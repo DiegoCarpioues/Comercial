@@ -77,4 +77,10 @@ class CajasModel extends Query
         $sql = "SELECT * FROM cajas WHERE id = $idCaja";
         return $this->select($sql);
     }
+
+    public function getCajaActivas($id_usuario)
+    {
+        $sql = "SELECT * FROM cajas AS c WHERE c.estado=1 AND c.id_usuario = $id_usuario";
+        return $this->select($sql);
+    }
 }

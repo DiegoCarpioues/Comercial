@@ -1,8 +1,13 @@
 <?php include_once 'views/templates/header.php';
-
-$bandera =true;
-
-if($bandera){
+$id_usuario = $_SESSION['id_usuario'];
+$model = 'CajasModel';
+$ruta = 'models/' . $model . '.php';
+if (file_exists($ruta)) {
+    require_once $ruta;
+    $this->model = new $model();
+}
+$verificar = $this->model->getCajaActivas($id_usuario);
+if($verificar!=null){
 ?>
 
 <div class="card">
@@ -144,7 +149,20 @@ if($bandera){
 <?php include_once 'views/templates/footer.php';
 }else{
 ?>
-    <span>Caja cerrada</span>
+    <div class="card">
+    <div class="card-body">
+        <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show py-2">
+        <div class="d-flex align-items-center">
+                <div class="font-35 text-white">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <div class="ms-3">
+                    <h6 class="mb-0 text-white text-center">CAJA CERRADA</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
 <?php 
 include_once 'views/templates/footer.php';
 }?>
