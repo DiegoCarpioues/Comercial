@@ -58,6 +58,60 @@ class CajasModel extends Query
         return $this->select($sql);
     }
 
+
+    public function getTotalMontoVentas($id_usuario, $fecha)
+    {
+        $sql = "SELECT
+        SUM(((c.precio * 0.23 )+c.precio)* d.cantidad) AS ventas_contado
+        FROM
+        ventas AS v
+        INNER JOIN
+        detalle_venta AS d
+        ON 
+            v.id = d.id_venta
+        INNER JOIN
+        compras AS c
+        ON 
+            d.id_compra = c.id WHERE v.id_usuario=$id_usuario AND v.fecha='$fecha'";
+        return $this->select($sql);
+    }
+
+
+    public function getTotalMontoCreditos($id_usuario, $fecha)
+    {
+        $sql = "SELECT
+        SUM(C.prima) AS total_creditos
+       FROM
+        ventas AS v
+        INNER JOIN
+        creditos AS c 
+        ON 
+        v.id = c.id_venta WHERE v.id_usuario=$id_usuario AND v.fecha='$fecha'";
+        return $this->select($sql);
+    }
+
+
+    
+    public function getTotalMontoAbonos($id_usuario, $fecha)
+    {
+        $sql = "SELECT
+        SUM(c.cuota) as total_abonos
+    FROM
+        ventas as v
+        INNER JOIN
+        creditos as c
+        ON 
+            v.id = c.id_venta
+        INNER JOIN
+        abonos as a
+        ON 
+            c.id = a.id_credito WHERE v.id_usuario =$id_usuario AND v.fecha='$fecha'";
+        return $this->select($sql);
+    }
+
+
+
+
     //cerrar caja
     public function cerrarCaja($fecha_cierre, $montoFinal, $totalVentas, $egresos, $id_usuario)
     {

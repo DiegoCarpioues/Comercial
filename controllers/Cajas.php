@@ -125,9 +125,14 @@ class Cajas extends Controller
         //$ventas = $this->model->getTotalVentas($this->id_usuario);
         date_default_timezone_set('America/El_Salvador');
         $fecha_cierre = date('Y-m-d');
-        $montoFinal = 100;
-        $totalVentas = $this->model->getTotalVentas($this->id_usuario, $fecha_cierre);;
+        $montoVentasFinal = $this->model->getTotalMontoVentas($this->id_usuario, $fecha_cierre);
+        $montoCreditos = $this->model->getTotalMontoCreditos($this->id_usuario, $fecha_cierre);
+        $montoAbonos = $this->model->getTotalMontoAbonos($this->id_usuario, $fecha_cierre);
+        $totalVentas = $this->model->getTotalVentas($this->id_usuario, $fecha_cierre);
+        
         $egresos =$this->model->getCompra($this->id_usuario, $fecha_cierre);
+
+        $montoFinal=$montoVentasFinal['ventas_contado'] + $montoCreditos['total_creditos'] + $montoAbonos['total_abonos'];
         $result = $this->model->cerrarCaja($fecha_cierre, $montoFinal, $totalVentas['venta_total'], $egresos['ingresos'], $this->id_usuario);
         if ($result == 1) {
 /*             $this->model->actualizarApertura('compras', $this->id_usuario);
