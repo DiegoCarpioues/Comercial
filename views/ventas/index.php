@@ -1,5 +1,3 @@
-<?php include_once 'views/templates/header.php'; ?>
-<?php include_once 'views/templates/header.php'; ?>
 
 <?php include_once 'views/templates/header.php';
 $id_usuario = $_SESSION['id_usuario'];
@@ -12,7 +10,6 @@ if (file_exists($ruta)) {
 $verificar = $this->model->getCajaActivas($id_usuario);
 if($verificar!=null){
 ?>
-
 <div class="card">
     <div class="card-body">
         <nav>

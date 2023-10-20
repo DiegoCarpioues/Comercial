@@ -1,5 +1,3 @@
-<?php include_once 'views/templates/header.php'; ?>
-
 <?php include_once 'views/templates/header.php';
 $id_usuario = $_SESSION['id_usuario'];
 $model = 'CajasModel';
